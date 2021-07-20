@@ -234,7 +234,6 @@ class notesystem:
         dumper.dump(tar.TarError())
 
         return
-
         if tar.is_tarfile(backupfile):
             return True
         else:
@@ -384,3 +383,5 @@ if __name__ == "__main__":
 
     ns = notesystem()
 
+
+    
