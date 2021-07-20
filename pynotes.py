@@ -19,7 +19,10 @@ from configparser import ConfigParser
 import os
 import tarfile
 import datetime
+<<<<<<< HEAD
 import gnupg
+=======
+>>>>>>> f4d5bd2 (notesystem() class __init__ and backup() implemented)
 
 import dumper
 
@@ -135,15 +138,21 @@ class notesystem:
             The default is not to have a git repo ie. 'ns = notesystem()' .
         '''
 
+<<<<<<< HEAD
         
+=======
+>>>>>>> f4d5bd2 (notesystem() class __init__ and backup() implemented)
         self.config = config(git=git)
         self.using = self.config.defaultnotebook
         self.default_fullpath = self.config.notesdir + '/' + self.config.defaultnotebook
         self.use_fullpath = self.config.notesdir + '/' + self.config.usenotebook        
         self.setupMissingDirs()
+<<<<<<< HEAD
 
         # grab first private key for use by default
         self.config.setGPGkey(self.getDefaultGPGkey())
+=======
+>>>>>>> f4d5bd2 (notesystem() class __init__ and backup() implemented)
 
         if not os.path.isfile(self.config.configfile):
             self.config.writeConfig()
@@ -193,6 +202,7 @@ class notesystem:
         t = datetime.datetime.now()
         backupfile = f"{self.config.home}/notes_backup_{t.strftime('%Y%b%d_%H%M')}.tar"
 
+<<<<<<< HEAD
         try:
             tar = tarfile.open(backupfile,'w')
 
@@ -226,6 +236,15 @@ class notesystem:
         key = self.private_keys[0]['keyid']     # get first key
 
         return key
+=======
+        tar = tarfile.open(backupfile,'w')
+
+        print(self.config.notesdir)
+        tar.add(self.config.notesdir)
+        tar.close()
+
+        return True
+>>>>>>> f4d5bd2 (notesystem() class __init__ and backup() implemented)
 
     def getKeyring(self):
 
@@ -356,7 +375,20 @@ class notebook:
 
 if __name__ == "__main__":
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> f4d5bd2 (notesystem() class __init__ and backup() implemented)
     ns = notesystem()
 
 
     
+<<<<<<< HEAD
+=======
+    ns.backup()
+
+
+    dumper.dump(ns)
+
+    
+>>>>>>> f4d5bd2 (notesystem() class __init__ and backup() implemented)
