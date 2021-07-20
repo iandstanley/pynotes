@@ -135,14 +135,12 @@ class notesystem:
             The default is not to have a git repo ie. 'ns = notesystem()' .
         '''
 
+        
         self.config = config(git=git)
         self.using = self.config.defaultnotebook
         self.default_fullpath = self.config.notesdir + '/' + self.config.defaultnotebook
         self.use_fullpath = self.config.notesdir + '/' + self.config.usenotebook        
         self.setupMissingDirs()
-
-        # grab first private key for use by default
-        self.config.setGPGkey(self.getDefaultGPGkey())
 
         # grab first private key for use by default
         self.config.setGPGkey(self.getDefaultGPGkey())
@@ -236,24 +234,11 @@ class notesystem:
         dumper.dump(tar.TarError())
 
         return
+
         if tar.is_tarfile(backupfile):
             return True
         else:
             pass
-
-
-        return True
-
-    def getDefaultGPGkey(self):
-        
-        self.gnupghome = self.config.home + '/.gnupg'
-        self.gpg = gnupg.GPG(gnupghome=self.gnupghome)
-        self.private_keys = self.gpg.list_keys(True) # True => private key
-
-        key = self.private_keys[0]['keyid']     # get first key
-
-        return key
-        tar = tarfile.open(backupfile,'w')
 
 
         return True
@@ -398,9 +383,4 @@ class notebook:
 if __name__ == "__main__":
 
     ns = notesystem()
-
-    ns.backup()
-
-
-    dumper.dump(ns)
 
