@@ -19,10 +19,7 @@ from configparser import ConfigParser
 import os
 import tarfile
 import datetime
-<<<<<<< HEAD
-import gnupg
-=======
->>>>>>> f4d5bd2 (notesystem() class __init__ and backup() implemented)
+import gnupg        # see https://docs.red-dove.com/python-gnupg/
 
 import dumper
 
@@ -138,21 +135,17 @@ class notesystem:
             The default is not to have a git repo ie. 'ns = notesystem()' .
         '''
 
-<<<<<<< HEAD
-        
-=======
->>>>>>> f4d5bd2 (notesystem() class __init__ and backup() implemented)
         self.config = config(git=git)
         self.using = self.config.defaultnotebook
         self.default_fullpath = self.config.notesdir + '/' + self.config.defaultnotebook
         self.use_fullpath = self.config.notesdir + '/' + self.config.usenotebook        
         self.setupMissingDirs()
-<<<<<<< HEAD
 
         # grab first private key for use by default
         self.config.setGPGkey(self.getDefaultGPGkey())
-=======
->>>>>>> f4d5bd2 (notesystem() class __init__ and backup() implemented)
+
+        # grab first private key for use by default
+        self.config.setGPGkey(self.getDefaultGPGkey())
 
         if not os.path.isfile(self.config.configfile):
             self.config.writeConfig()
@@ -192,9 +185,34 @@ class notesystem:
 
         
     def newKey(self, key):
-        ''' change GPG key for all notes
         '''
+        Change GPG key for all notes.
+
+        This takes a GnuPG keyId as a parameter.
+        The key is validated as a private key on the user's keyring before processing
+        '''
+        # check that the new key is a valid  private key
+
+
+        # then process each file and decrypt/encrypt them
+
+        # update config file with new GPG key
+    
+
         return true
+
+    def getNotebooks(self):
+        ''' Return a collection of all existing notebooks
+        '''
+
+        return
+
+    def getNotes(self,notebook):
+        ''' Return a collection of all notes within a specified notebook
+        '''
+
+        return
+    
 
     def backup(self):
         ''' backup notes to file
@@ -202,7 +220,6 @@ class notesystem:
         t = datetime.datetime.now()
         backupfile = f"{self.config.home}/notes_backup_{t.strftime('%Y%b%d_%H%M')}.tar"
 
-<<<<<<< HEAD
         try:
             tar = tarfile.open(backupfile,'w')
 
@@ -236,15 +253,20 @@ class notesystem:
         key = self.private_keys[0]['keyid']     # get first key
 
         return key
-=======
         tar = tarfile.open(backupfile,'w')
 
-        print(self.config.notesdir)
-        tar.add(self.config.notesdir)
-        tar.close()
 
         return True
->>>>>>> f4d5bd2 (notesystem() class __init__ and backup() implemented)
+
+    def getDefaultGPGkey(self):
+        
+        self.gnupghome = self.config.home + '/.gnupg'
+        self.gpg = gnupg.GPG(gnupghome=self.gnupghome)
+        self.private_keys = self.gpg.list_keys(True) # True => private key
+
+        key = self.private_keys[0]['keyid']     # get first key
+
+        return key
 
     def getKeyring(self):
 
@@ -375,20 +397,10 @@ class notebook:
 
 if __name__ == "__main__":
 
-<<<<<<< HEAD
-=======
-
->>>>>>> f4d5bd2 (notesystem() class __init__ and backup() implemented)
     ns = notesystem()
 
-
-    
-<<<<<<< HEAD
-=======
     ns.backup()
 
 
     dumper.dump(ns)
 
-    
->>>>>>> f4d5bd2 (notesystem() class __init__ and backup() implemented)

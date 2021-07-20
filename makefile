@@ -16,5 +16,4 @@ compile:
 
 pip:
 	pip install configparser
-	#pip install unittest2
-	
+	pip install gnupg	

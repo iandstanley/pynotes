@@ -6,7 +6,6 @@ from pynotes import config, notesystem
 class TestConfig(unittest.TestCase):
     def test_init(self):
         n = notesystem()             # initialize notesystem as it will create NOTESDIR etc
- 
         c = config()
         self.assertTrue(c.initran)   # test __init__ runs to end
 
