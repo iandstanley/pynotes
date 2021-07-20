@@ -19,6 +19,7 @@ from configparser import ConfigParser
 import os
 import tarfile
 import datetime
+import gnupg
 
 import dumper
 
@@ -87,6 +88,9 @@ class config:
         self.initran = True
 
 
+    def setGPGkey(self, key):
+        self.gpgkey = key
+
     def writeConfig(self):
         ''' write config to configfile
         '''
@@ -131,11 +135,15 @@ class notesystem:
             The default is not to have a git repo ie. 'ns = notesystem()' .
         '''
 
+        
         self.config = config(git=git)
         self.using = self.config.defaultnotebook
         self.default_fullpath = self.config.notesdir + '/' + self.config.defaultnotebook
         self.use_fullpath = self.config.notesdir + '/' + self.config.usenotebook        
         self.setupMissingDirs()
+
+        # grab first private key for use by default
+        self.config.setGPGkey(self.getDefaultGPGkey())
 
         if not os.path.isfile(self.config.configfile):
             self.config.writeConfig()
@@ -185,15 +193,43 @@ class notesystem:
         t = datetime.datetime.now()
         backupfile = f"{self.config.home}/notes_backup_{t.strftime('%Y%b%d_%H%M')}.tar"
 
-        tar = tarfile.open(backupfile,'w')
+        try:
+            tar = tarfile.open(backupfile,'w')
 
-        print(self.config.notesdir)
-        tar.add(self.config.notesdir)
-        tar.close()
+            tar.add(self.config.notesdir)
+
+            tar.close()
+
+            return True
+
+        except tar.TarError as err:
+            return err
+
+        
+        dumper.dump(tar.TarError())
+
+        return
+        if tar.is_tarfile(backupfile):
+            return True
+        else:
+            pass
+
 
         return True
 
+    def getDefaultGPGkey(self):
+        
+        self.gnupghome = self.config.home + '/.gnupg'
+        self.gpg = gnupg.GPG(gnupghome=self.gnupghome)
+        self.private_keys = self.gpg.list_keys(True) # True => private key
+
+        key = self.private_keys[0]['keyid']     # get first key
+
+        return key
+
     def getKeyring(self):
+
+
         pass
 
     def getFirstGPGKey(self):
@@ -320,14 +356,7 @@ class notebook:
 
 if __name__ == "__main__":
 
-
     ns = notesystem()
 
-
-    
-    ns.backup()
-
-
-    dumper.dump(ns)
 
     
