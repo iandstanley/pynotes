@@ -17,6 +17,9 @@ The following classes are implemented:
 
 from configparser import ConfigParser 
 import os
+import tarfile
+import datetime
+
 import dumper
 
 '''  FEATURES TO ADD:
@@ -64,7 +67,6 @@ class config:
         self.spelling="None"
         self.defaultnotebook="Notes"
         self.usenotebook="Notes"
-        self.configfile="config.ini"
         self.home = os.environ['HOME']
 
         if git == False:
@@ -74,12 +76,14 @@ class config:
 
         # calculate NOTESDIR
         if 'XDG_DATA_DIR' in os.environ:
-            notesdir =  os.environ['XDG_DATA_DIR']
+            self.notesdir =  os.environ['XDG_DATA_DIR']
         elif 'NOTESDIR' in os.environ:
-            notesdir = os.environ['NOTESDIR']
+            self.notesdir = os.environ['NOTESDIR']
         else:
-            notesdir = self.home + "/.notes"
+            self.notesdir = self.home + "/.notes"
 
+        self.configfile=f"{self.notesdir}/config"
+ 
         self.initran = True
 
 
@@ -91,13 +95,14 @@ class config:
             'key': self.gpgkey,
             'usegit': str(self.usegit),
             'spelling': self.spelling,
+            'notesdir': self.notesdir, # not read from config file
             'usenotebook': self.usenotebook,
             'defaultnotebook': self.defaultnotebook   
         }
 
         with open(self.configfile, 'w') as configfile:
             c.write(configfile)
-
+        
     def readConfig(self):
         ''' read config from configfile
         '''
@@ -116,16 +121,58 @@ class config:
 
 class notesystem:
 
-    def __init__(self):
+    def __init__(self,git=False):
+        '''
+        __init__ notessystem
 
-        self.config = config()
+        Git Initialisation:
+            Specify notesystem(git=True) can be used to create a git repo
+            inside the NOTESDIR. Commits will be made on each change
+            The default is not to have a git repo ie. 'ns = notesystem()' .
+        '''
 
+        self.config = config(git=git)
         self.using = self.config.defaultnotebook
-        
+        self.default_fullpath = self.config.notesdir + '/' + self.config.defaultnotebook
+        self.use_fullpath = self.config.notesdir + '/' + self.config.usenotebook        
+        self.setupMissingDirs()
 
-        # if default/use notebooks do not exist create
+        if not os.path.isfile(self.config.configfile):
+            self.config.writeConfig()
 
         self.initran = True
+
+    def setupMissingDirs(self):
+        
+        if not os.path.isdir(self.config.notesdir):
+            # TODO maybe log these print statements
+            print(f"NOTESDIR does not exist, creating {self.config.notesdir}")
+            os.mkdir(self.config.notesdir, mode=0o700)
+
+        if not os.path.isdir(self.default_fullpath):
+            print(f"Default notebook does not exist, creating {self.config.defaultnotebook}")
+            os.mkdir(self.default_fullpath, mode=0o700)
+
+        if not os.path.isdir(self.use_fullpath):
+            # repetitous but just in case config file has been manually edited
+            print(f"Setting the current notebook to {self.config.usenotebook}")
+            os.mkdir(self.use_fullpath, mode=0o700)
+
+    def getDefaultNotebook(self):
+        return self.config.defaultnotebook
+
+
+    def getUseNotebook(self):
+        return self.config.usenotebook
+
+
+    def getDefaultNotebookFullpath(self):
+        return self.default_fullpath
+
+
+    def getUseNotebookFullpath(self):
+        return self.use_fullpath
+
         
     def newKey(self, key):
         ''' change GPG key for all notes
@@ -135,7 +182,16 @@ class notesystem:
     def backup(self):
         ''' backup notes to file
         '''
-        return true
+        t = datetime.datetime.now()
+        backupfile = f"{self.config.home}/notes_backup_{t.strftime('%Y%b%d_%H%M')}.tar"
+
+        tar = tarfile.open(backupfile,'w')
+
+        print(self.config.notesdir)
+        tar.add(self.config.notesdir)
+        tar.close()
+
+        return True
 
     def getKeyring(self):
         pass
@@ -264,4 +320,14 @@ class notebook:
 
 if __name__ == "__main__":
 
-    pass
+
+    ns = notesystem()
+
+
+    
+    ns.backup()
+
+
+    dumper.dump(ns)
+
+    

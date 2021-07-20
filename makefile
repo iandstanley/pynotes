@@ -8,9 +8,7 @@ help:
 	echo help
 
 test: 
-	#	python -m unittest 	
-		python -m unittest test_config
-	#	python -m unittest test_notesystem
+	python -m unittest 	
 
 compile:
 	echo compile
