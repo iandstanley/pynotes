@@ -12,8 +12,10 @@ test: 	clean
 	mkdir -p $(NOTESDIR)
 	python -m unittest 	
 
+tree:
+	tree -a $(NOTESDIR)
 clean:
-	@rm -rf __testing
+	@rm -rf __testing__
 
 compile:
 	echo compile

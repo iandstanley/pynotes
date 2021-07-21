@@ -9,7 +9,6 @@ import dumper
 class TestNotesystem(unittest.TestCase):
     ''' Testing notesystem without GIT
     '''
-
     def setUp(self):
         self.n = notesystem()
         
@@ -50,8 +49,10 @@ class TestNotesystem(unittest.TestCase):
     def test_getUseNotebookFullpath(self):
         self.assertTrue(self.n.backup())
 
-    def test_validateGPGkey(self):
+    def test_validGPGkey(self):
         self.assertTrue(self.n.validateGPGkey('C7E223E0361DF63A'))  # VALID PRIVATE KEY
+
+    def test_invalidGPGkey(self):
         self.assertFalse(self.n.validateGPGkey('ABCDEF'))  # INVALID DUMMY KEY
         self.assertFalse(self.n.validateGPGkey('AC530D520F2F3269F5E98313A48449044AAD5C5D'))  # VALID LONG PUBLIC KEY
         self.assertFalse(self.n.validateGPGkey('A48449044AAD5C5D'))  # VALID SHORT PUBLIC KEY
@@ -66,10 +67,6 @@ class TestNotesystem(unittest.TestCase):
         self.assertTrue(self.n.backup())
         # TODO: test tar error handling
         
-    def test_getNotebooks(self):
-        r = self.n.getNotebooks()
-        print(f"Notebooks = {r}")
-        self.assertEqual(r,['Notes'])
 
 class TestNotesystemWithGIT(unittest.TestCase):
     ''' Testing notesystem() with GIT

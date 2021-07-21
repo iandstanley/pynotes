@@ -189,8 +189,7 @@ class notesystem:
         ''' Return a collection of all notes within a specified notebook
         '''
         n = os.listdir(notebook.fullpath)
-
-
+        
         return n
     
 
@@ -213,7 +212,7 @@ class notesystem:
             return err
 
         
-        dumper.dump(tar.TarError())
+##        dumper.dump(tar.TarError())
 
         return
         if tar.is_tarfile(backupfile):
@@ -272,7 +271,12 @@ class notes:
     '''
 
     def __init__(self):
+        self.config = config()
+        self.config.readConfig()
         self.testinit=True
+
+##        dump(self)
+##        print(self.config.usenotebook)
 
     def add(self, title):
         ''' add a note
@@ -347,18 +351,40 @@ class notebook:
     '''
 
     def __init__(self):
+        self.config = config()
+        self.config.readConfig()
+        self.notebookname = ''
+        self.notebookpath = ''
+        
         self.testinit=True
 
-
-    def add(self, title):
-        ''' add a notebook
+    def create(self, title):
+        ''' creates a new notebook directory under the NOTESDIR
+        notebook().create(title)
+        Replaces spaces with underscores in title
         '''
-        pass
+        self.notebookname = title.replace(" ","_")
+        self.notebookpath = self.config.notesdir + '/' + self.notebookname
 
-    def rename(self, newname):
+        if not os.path.exists(self.notebookpath):
+            os.mkdir(self.notebookpath, mode=0o700)
+
+        return os.path.exists(self.notebookpath)
+        
+    def rename(self, title):
         ''' rename a notebook
+        Renames existing notebook as title
         '''
-        pass
+        title = title.replace(" ","_")
+        frompath = self.notebookpath
+        topath = self.config.notesdir + '/' + title
+
+        if not os.path.exists(self.notebookpath):
+            os.rename(frompath, topath)
+
+        return os.path.exists(self.notebookpath)
+
+        
 
     def duplicate(self, newfilename):
         ''' duplicate a notebook
@@ -386,3 +412,8 @@ class notebook:
 if __name__ == "__main__":
 
     ns = notesystem()
+
+    nb = notebook()
+##    nb.create('hello world')
+##
+##    nb.rename('demo notebook')
