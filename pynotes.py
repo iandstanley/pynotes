@@ -23,9 +23,8 @@ from dumper import dump
 
 '''  FEATURES TO ADD:
 X read/write config file
-- what init variations do i need
-- create note
-- import note
+X create note
+X import note
 - edit note
 - copy note
 - move note
@@ -40,7 +39,7 @@ X read/write config file
 - view note
 - search notes
 - new key for gpg
-- backup notes
+X backup notes
 - tree of directory
 - HELP 
     '''
@@ -179,17 +178,12 @@ class notesystem:
     def getNotebooks(self):
         ''' Return a collection of all existing notebooks
         '''
-        dirs = [d for d in os.listdir(self.config.notesdir) if os.path.isdir(os.path.join(self.config.notesdir, d))]
-
-        return dirs
+        return [d for d in os.listdir(self.config.notesdir) if os.path.isdir(os.path.join(self.config.notesdir, d))]
 
     def getNotes(self,notebook):
         ''' Return a collection of all notes within a specified notebook
         '''
-        n = os.listdir(notebook.fullpath)
-        
-        return n
-    
+        return os.listdir(notebook.fullpath)    
 
     def backup(self):
         ''' backup notes to file
@@ -199,27 +193,12 @@ class notesystem:
 
         try:
             tar = tarfile.open(backupfile,'w')
-
             tar.add(self.config.notesdir)
-
             tar.close()
-
             return True
-
+        
         except tar.TarError as err:
             return err
-
-        
-##        dumper.dump(tar.TarError())
-
-        return
-        if tar.is_tarfile(backupfile):
-            return True
-        else:
-            pass
-
-
-        return True
 
         
     def newKey(self, key):
@@ -242,23 +221,23 @@ class notesystem:
 
 
     def validateGPGkey(self,key):
-
+        ''' Validates that the supplied key is a PRIVATE key
+        '''
         gpg = gnupg.GPG(gnupghome=self.gnupghome)
-
         if gpg.list_keys(True,keys=key):
             return True
         else:
             return False
         
     def getDefaultGPGkey(self):
-        
+        ''' Return default GPG private key
+        Returns the first private key in our keyring
+        '''
         self.gnupghome = self.config.home + '/.gnupg'
         self.gpg = gnupg.GPG(gnupghome=self.gnupghome)
         self.private_keys = self.gpg.list_keys(True) # True => private key
+        return self.private_keys[0]['keyid']     # get first key
 
-        key = self.private_keys[0]['keyid']     # get first key
-
-        return key
 
 
 #==================================#
@@ -282,13 +261,14 @@ class notes:
         ''' add a note
         '''
         title = title.replace(" ","_")
-
-        if os.path.exists(self.config.usenotebook + '/' + title):
+        titlepath = self.prependNotebook(title)
+        
+        if os.path.exists(titlepath):
             return False
 
         self.notetitle = title
-        self.notefullpath = self.config.notesdir + '/' + self.config.usenotebook + '/' + title
-        print(f"notefullpath = {self.notefullpath}")
+        self.notefullpath = titlepath
+
 
         with open(self.notefullpath, 'w') as nf:
             nf.write(title)
@@ -297,21 +277,59 @@ class notes:
         return self
 
     def setPlaintext(self,PT):
+        ''' Save CT parameter to object
+        '''
         self.plaintext = PT
 
     def setCiphertext(self,CT):
+        ''' Save CT parameter to object
+        '''
         self.ciphertext = CT
 
+    def saveCiphertext(self):
+        ''' Save CT to file
+        '''
+        with open(self.prependNotebook(self.notetitle), 'w') as outp:
+            outp.write(self.ciphertext)
+
+    def savePlaintext(self):
+        ''' Save PT to file
+        '''
+##        breakpoint()
+        filePT = self.prependNotebook(self.notetitle)
+        print(filePT)
+        print(f"PT = {self.plaintext}")
+        with open(filePT, 'w') as outp:
+            outp.write(self.plaintext)
+
+ 
     def importNote(self, filename):
         ''' import a note from a file
         '''
-##        title = title.replace(" ","_")
 
-        pass
+        if not os.path.exists(filename):
+            return False
+            
+        with open(filename, 'r') as imp:
+            self.plaintext = imp.read()
+            self.notetitle = filename.replace(" ","_")
+            self.notefullpath = self.prependNotebook(filename)
+
+            imp.close()
+##    TODO: encrypt and save
+
+        # encrypt
+
+        # save note
+
 
     def rename(self, filename, newname):
         ''' rename a note
         '''
+
+        if not os.path.exists(filename):
+            return False
+
 ##        title = title.replace(" ","_")
 
         pass
@@ -368,6 +386,13 @@ class notes:
         ''' edit note
         '''
         pass
+
+    def prependNotebook(self, title):
+        ''' prepend fullpath of file
+        Add the current self.usenotebook fullpath
+        '''
+        return f"{self.config.notesdir}/{self.config.usenotebook}/{title}"
+
 
 #==================================#
 
