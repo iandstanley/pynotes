@@ -21,7 +21,7 @@ import tarfile
 import datetime
 import gnupg        # see https://docs.red-dove.com/python-gnupg/
 
-import dumper
+from dumper import dump 
 
 '''  FEATURES TO ADD:
 X read/write config file
@@ -169,54 +169,36 @@ class notesystem:
     def getDefaultNotebook(self):
         return self.config.defaultnotebook
 
-
     def getUseNotebook(self):
         return self.config.usenotebook
-
 
     def getDefaultNotebookFullpath(self):
         return self.default_fullpath
 
-
     def getUseNotebookFullpath(self):
         return self.use_fullpath
-
-        
-    def newKey(self, key):
-        '''
-        Change GPG key for all notes.
-
-        This takes a GnuPG keyId as a parameter.
-        The key is validated as a private key on the user's keyring before processing
-        '''
-        # check that the new key is a valid  private key
-
-
-        # then process each file and decrypt/encrypt them
-
-        # update config file with new GPG key
-    
-
-        return true
 
     def getNotebooks(self):
         ''' Return a collection of all existing notebooks
         '''
+        dirs = [d for d in os.listdir(self.config.notesdir) if os.path.isdir(os.path.join(self.config.notesdir, d))]
 
-        return
+        return dirs
 
     def getNotes(self,notebook):
         ''' Return a collection of all notes within a specified notebook
         '''
+        n = os.listdir(notebook.fullpath)
 
-        return
+
+        return n
     
 
     def backup(self):
         ''' backup notes to file
         '''
         t = datetime.datetime.now()
-        backupfile = f"{self.config.home}/notes_backup_{t.strftime('%Y%b%d_%H%M')}.tar"
+        backupfile = f"{self.config.notesdir}/../notes_backup_{t.strftime('%Y%b%d_%H%M')}.tar"
 
         try:
             tar = tarfile.open(backupfile,'w')
@@ -242,6 +224,35 @@ class notesystem:
 
         return True
 
+        
+    def newKey(self, key):
+        '''
+        Change GPG key for all notes.
+
+        This takes a GnuPG keyId as a parameter.
+        The key is validated as a private key on the user's keyring before processing
+        '''
+        if not self.validateGPGkey(key):    # return False if not valid private key
+            return False
+        
+
+        # then process each file and decrypt/encrypt them
+
+        # update config file with new GPG key
+    
+
+        return True
+
+
+    def validateGPGkey(self,key):
+
+        gpg = gnupg.GPG(gnupghome=self.gnupghome)
+
+        if gpg.list_keys(True,keys=key):
+            return True
+        else:
+            return False
+        
     def getDefaultGPGkey(self):
         
         self.gnupghome = self.config.home + '/.gnupg'
@@ -252,13 +263,6 @@ class notesystem:
 
         return key
 
-    def getKeyring(self):
-
-
-        pass
-
-    def getFirstGPGKey(self):
-        pass
 
 #==================================#
                                                    
@@ -382,6 +386,3 @@ class notebook:
 if __name__ == "__main__":
 
     ns = notesystem()
-
-
-    
