@@ -1,8 +1,7 @@
 
 # TESTING NOTESYSTEM
 
-import os
-import unittest
+import unittest, os, pathlib, shutil
 from pynotes import config, notesystem
 import dumper
 

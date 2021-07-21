@@ -1,6 +1,6 @@
 # TESTING CONFIG CLASS 
 
-import unittest
+import unittest, os, pathlib, shutil
 from pynotes import config, notesystem
 
 class TestConfig(unittest.TestCase):

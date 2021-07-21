@@ -1,7 +1,8 @@
 
 # TESTING NOTEBOOKS
 
-import unittest, os, shutil
+
+import unittest, os, pathlib, shutil
 from pynotes import notebook, config, notesystem
 
 class TestNotebooks(unittest.TestCase):

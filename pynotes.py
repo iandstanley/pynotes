@@ -16,7 +16,7 @@ The following classes are implemented:
 """
 
 from configparser import ConfigParser 
-import os, shutil, datetime, tarfile
+import os, shutil, datetime, tarfile, pathlib
 import gnupg        # see https://docs.red-dove.com/python-gnupg/
 
 from dumper import dump 
@@ -43,7 +43,7 @@ X read/write config file
 - backup notes
 - tree of directory
 - HELP 
-'''
+    '''
 
 class config:
     '''
@@ -272,33 +272,61 @@ class notes:
         self.config = config()
         self.config.readConfig()
         self.testinit=True
+        self.plaintext = ''
+        self.ciphertext = ''
+        self.notebook = ''
+        self.notetitle = ''
+        self.notefullpath = ''
 
-##        dump(self)
-##        print(self.config.usenotebook)
-
-    def add(self, title):
+    def create(self, title):
         ''' add a note
         '''
-        pass
+        title = title.replace(" ","_")
+
+        if os.path.exists(self.config.usenotebook + '/' + title):
+            return False
+
+        self.notetitle = title
+        self.notefullpath = self.config.notesdir + '/' + self.config.usenotebook + '/' + title
+        print(f"notefullpath = {self.notefullpath}")
+
+        with open(self.notefullpath, 'w') as nf:
+            nf.write(title)
+            nf.close()
+        
+        return self
+
+    def setPlaintext(self,PT):
+        self.plaintext = PT
+
+    def setCiphertext(self,CT):
+        self.ciphertext = CT
 
     def importNote(self, filename):
         ''' import a note from a file
         '''
+##        title = title.replace(" ","_")
+
         pass
 
     def rename(self, filename, newname):
         ''' rename a note
         '''
+##        title = title.replace(" ","_")
+
         pass
 
     def duplicate(self, filename, newfilename):
         ''' duplicate a note
         '''
+##        title = title.replace(" ","_")
+
         pass
 
     def delete(self):
         ''' delete note
         '''
+##        title = title.replace(" ","_")
         pass
     
     def copyTo(self, filename, newfilename):
