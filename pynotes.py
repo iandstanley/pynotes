@@ -16,9 +16,7 @@ The following classes are implemented:
 """
 
 from configparser import ConfigParser 
-import os
-import tarfile
-import datetime
+import os, shutil, datetime, tarfile
 import gnupg        # see https://docs.red-dove.com/python-gnupg/
 
 from dumper import dump 
@@ -386,31 +384,39 @@ class notebook:
         return os.path.exists(self.notebookpath)
 
 
-    def duplicate(self, newfilename):
+    def duplicate(self, title):
         ''' duplicate a notebook
         '''
-        pass
+        title = title.replace(" ","_")
+        frompath = self.notebookpath
+        topath = self.config.notesdir + '/' + title
+
+        if os.path.exists(frompath) and not os.path.exists(topath):
+            shutil.copytree(frompath,topath)
+        return os.path.exists(topath)
     
     def delete(self):
         ''' delete notebook and notes
         '''
-
         if os.path.exists(self.notebookpath):
             shutil.rmtree(self.notebookpath)
-
         return not os.path.exists(self.notebookpath)
-
         
-
-    def use(self,notebook):
+    def use(self,title):
         ''' use notebook
         '''
-        pass
+        title = title.replace(" ","_")
+        n = self.config.notesdir + '/' + title
+        if os.path.exists(self.config.notesdir + '/' + title):
+            self.notebookname = title
+            self.notebookpath = self.config.notesdir + '/' + self.notebookname
+            self.config.usenotebook = title
+        return
 
     def default(self):
         ''' switch back to default notebook
         '''
-        pass
+        self.config.usenotebook = self.config.defaultnotebook
 
 
 #==================================#

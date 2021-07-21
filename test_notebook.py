@@ -4,7 +4,7 @@
 import unittest, os, shutil
 from pynotes import notebook, config, notesystem
 
-class TestConfig(unittest.TestCase):
+class TestNotebooks(unittest.TestCase):
     def setUp(self):
         self.ns = notesystem()
         self.nb = notebook()
@@ -21,8 +21,7 @@ class TestConfig(unittest.TestCase):
         self.nb.create('Before rename')
         self.nb.rename(newname)
         self.assertTrue(os.path.exists(self.nb.notebookpath))
-        self.assertFalse(os.path.exists(self.nb.config.usenotebook + newname))
-        
+        self.assertFalse(os.path.exists(self.nb.config.usenotebook + newname))    
 
     def test_getNotebooks(self):
         try:
@@ -39,4 +38,29 @@ class TestConfig(unittest.TestCase):
         self.assertTrue(os.path.exists(self.nb.notebookpath))
         shutil.rmtree(self.nb.notebookpath)
         self.assertFalse(os.path.exists(self.nb.notebookpath))
+
+    def test_duplicateNotebook(self):
+        self.assertTrue(self.nb.create('notebook to copy'))
+        self.assertTrue(os.path.exists(self.nb.notebookpath))
+        self.nb.duplicate('notebook copied')
+        self.assertTrue(os.path.exists(self.ns.config.notesdir + '/notebook_copied'))
+       
     
+    def test_default(self):
+        self.nb.create('move_from_default')
+        self.nb.use('move_from_default')
+        self.assertEqual(self.nb.config.usenotebook,'move_from_default')
+        self.nb.default()
+        self.assertEqual(self.nb.config.usenotebook,self.nb.config.defaultnotebook)
+
+    def test_use(self):
+        self.nb.create('one')
+        self.nb.create('two')
+        self.nb.use('one')
+        self.assertEqual(self.nb.config.usenotebook,'one')
+        self.nb.use('two')
+        self.assertEqual(self.nb.config.usenotebook,'two')
+        self.nb.use('one')
+        self.assertEqual(self.nb.config.usenotebook,'one')
+        
+        

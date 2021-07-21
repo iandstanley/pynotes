@@ -1,10 +1,10 @@
 
-# TESTING CONFIG
+# TESTING NOTES
 
-import unittest
-from pynotes import notes
+import unittest, os, shutil
+from pynotes import notes, notebook, config, notesystem
 
-class TestConfig(unittest.TestCase):
+class TestNotes(unittest.TestCase):
     def test_init(self):
-            n = notes()
-            self.assertTrue(n.testinit)
+        n = notes()
+        self.assertTrue(n.testinit)
