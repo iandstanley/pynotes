@@ -43,8 +43,7 @@ class TestNotebooks(unittest.TestCase):
         self.assertTrue(self.nb.create('notebook to copy'))
         self.assertTrue(os.path.exists(self.nb.notebookpath))
         self.nb.duplicate('notebook copied')
-        self.assertTrue(os.path.exists(self.ns.config.notesdir + '/notebook_copied'))
-       
+        self.assertTrue(os.path.exists(self.ns.config.notesdir + '/notebook_copied'))     
     
     def test_default(self):
         self.nb.create('move_from_default')

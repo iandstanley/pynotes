@@ -423,9 +423,4 @@ class notebook:
 
 if __name__ == "__main__":
 
-    ns = notesystem()
-
-    nb = notebook()
-##    nb.create('hello world')
-##
-##    nb.rename('demo notebook')
+    pass
