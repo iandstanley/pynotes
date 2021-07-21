@@ -20,6 +20,9 @@ class TestConfig(unittest.TestCase):
         newname = 'After rename'
         self.nb.create('Before rename')
         self.nb.rename(newname)
+        self.assertTrue(os.path.exists(self.nb.notebookpath))
+        self.assertFalse(os.path.exists(self.nb.config.usenotebook + newname))
+        
 
     def test_getNotebooks(self):
         try:
@@ -29,3 +32,11 @@ class TestConfig(unittest.TestCase):
         r = self.ns.getNotebooks()
         self.nb.create('Another notebook')
         self.assertEqual(self.ns.getNotebooks(),r + ['Another_notebook'])
+
+    def test_deleteNotebook(self):
+        todel = 'notebook_to_delete'
+        self.nb.create(todel)
+        self.assertTrue(os.path.exists(self.nb.notebookpath))
+        shutil.rmtree(self.nb.notebookpath)
+        self.assertFalse(os.path.exists(self.nb.notebookpath))
+    

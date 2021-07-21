@@ -379,12 +379,12 @@ class notebook:
         frompath = self.notebookpath
         topath = self.config.notesdir + '/' + title
 
-        if not os.path.exists(self.notebookpath):
+        if os.path.exists(self.notebookpath):
             os.rename(frompath, topath)
+            self.notebookpath = topath
 
         return os.path.exists(self.notebookpath)
 
-        
 
     def duplicate(self, newfilename):
         ''' duplicate a notebook
@@ -394,7 +394,13 @@ class notebook:
     def delete(self):
         ''' delete notebook and notes
         '''
-        pass
+
+        if os.path.exists(self.notebookpath):
+            shutil.rmtree(self.notebookpath)
+
+        return not os.path.exists(self.notebookpath)
+
+        
 
     def use(self,notebook):
         ''' use notebook
