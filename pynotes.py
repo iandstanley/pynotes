@@ -81,6 +81,10 @@ class config:
             self.notesdir = self.home + "/.notes"
 
         self.configfile=f"{self.notesdir}/config"
+
+##        print(f"os.environ = {os.environ['NOTESDIR']}")
+##        print(f"config.notedir = {self.notesdir}     config.configfile = {self.configfile}")
+
  
         self.initran = True
 
@@ -97,6 +101,7 @@ class config:
             'usegit': str(self.usegit),
             'spelling': self.spelling,
             'notesdir': self.notesdir, # not read from config file
+            'configfile': self.configfile,
             'usenotebook': self.usenotebook,
             'defaultnotebook': self.defaultnotebook   
         }
@@ -261,7 +266,7 @@ class notes:
         ''' add a note
         '''
         title = title.replace(" ","_")
-        titlepath = self.prependNotebook(title)
+        titlepath = self.prependUseNotebook(title)
         
         if os.path.exists(titlepath):
             return False
@@ -269,15 +274,39 @@ class notes:
         self.notetitle = title
         self.notefullpath = titlepath
 
-
-        with open(self.notefullpath, 'w') as nf:
-            nf.write(title)
-            nf.close()
+##        with open(self.notefullpath, 'w') as nf:
+##            nf.write('')    # touch notefile
+##            nf.close()
         
         return self
 
+    def open(self, filename):
+        ''' add a note
+        '''
+        titlepath = self.prependUseNotebook(filename)
+
+        ftitle, fext = os.path.splitext(filename)
+        
+        if not os.path.exists(titlepath):
+            return False
+
+        self.notetitle = ftitle
+        self.notefullpath = titlepath
+
+        with open(self.notefullpath, 'r') as nf:
+            textcontent = nf.read()
+            nf.close()
+
+        if fext == '.asc':
+            self.ciphertext = textcontent
+            self.plaintext = ''
+        else:
+            self.ciphertext = ''
+            self.plaintext = textcontent
+
+
     def setPlaintext(self,PT):
-        ''' Save CT parameter to object
+        ''' Save PT parameter to object
         '''
         self.plaintext = PT
 
@@ -289,31 +318,25 @@ class notes:
     def saveCiphertext(self):
         ''' Save CT to file
         '''
-        with open(self.prependNotebook(self.notetitle), 'w') as outp:
+        with open(self.prependUseNotebook(self.notetitle+'.asc'), 'w') as outp:
             outp.write(self.ciphertext)
 
     def savePlaintext(self):
         ''' Save PT to file
         '''
-##        breakpoint()
-        filePT = self.prependNotebook(self.notetitle)
-        print(filePT)
-        print(f"PT = {self.plaintext}")
-        with open(filePT, 'w') as outp:
+        with open(self.prependUseNotebook(self.notetitle), 'w') as outp:
             outp.write(self.plaintext)
-
  
     def importNote(self, filename):
         ''' import a note from a file
         '''
-
         if not os.path.exists(filename):
             return False
             
         with open(filename, 'r') as imp:
             self.plaintext = imp.read()
             self.notetitle = filename.replace(" ","_")
-            self.notefullpath = self.prependNotebook(filename)
+            self.notefullpath = self.prependUseNotebook(filename)
 
             imp.close()
 ##    TODO: encrypt and save
@@ -323,23 +346,31 @@ class notes:
         # save note
 
 
-    def rename(self, filename, newname):
+    def rename(self, newname):
         ''' rename a note
         '''
-
-        if not os.path.exists(filename):
+        newname = self.prependUseNotebook(newname.replace(" ","_"))
+        
+        if not os.path.exists(self.prependUseNotebook(self.notetitle)):
             return False
 
-##        title = title.replace(" ","_")
+        shutil.move(self.prependUseNotebook(self.notetitle), newname)
 
-        pass
+        return os.path.exists(newname)
 
-    def duplicate(self, filename, newfilename):
+
+    def duplicate(self, newname):
         ''' duplicate a note
         '''
-##        title = title.replace(" ","_")
+        newname = self.prependUseNotebook(newname.replace(" ","_"))
+        
+        if not os.path.exists(self.prependUseNotebook(self.notetitle)):
+            return False
 
-        pass
+        shutil.copy2(self.prependUseNotebook(self.notetitle), newname)
+
+        return os.path.exists(newname)
+
 
     def delete(self):
         ''' delete note
@@ -347,25 +378,47 @@ class notes:
 ##        title = title.replace(" ","_")
         pass
     
-    def copyTo(self, filename, newfilename):
+    def copyTo(self, notebook):
         ''' copy a note to another notebook
         '''
-        pass
+        newname = self.prependAnotebook(notebook, self.notetitle)
+        if os.path.exists(newname):
+            return False
 
-    def moveTo(self, filename, notebook):
+        shutil.copy2(self.prependUseNotebook(self.notetitle), newname)
+
+        return os.path.exists(newname)
+
+
+    def moveTo(self, notebook):
         ''' move a note to new notebook
         '''
-        pass
+        newname = self.prependAnotebook(notebook, self.notetitle)
+        
+        if not os.path.exists(self.prependUseNotebook(self.notetitle)):
+            return False
+
+        shutil.move(self.prependUseNotebook(self.notetitle), newname)
+
+        return os.path.exists(newname)
+
+
 
     def encrypt(self):
         ''' encrypt Plaintext to Ciphertext
         '''
-        pass
+        # dummy encryption
+        self.ciphertext = "%% " + self.plaintext
+        self.plaintext = ''
+##        print(f"encrypt(): ciphertext = {self.ciphertext}")
 
+    
     def decrypt(self):
         ''' encrypt Plaintext to Ciphertext
         '''
-        pass
+        self.plaintext = self.ciphertext[3:]
+        self.ciphertext = ''
+##        print(f"decrypt(): plaintext = {self.plaintext}")
 
     def save(self):
         ''' save note
@@ -387,11 +440,17 @@ class notes:
         '''
         pass
 
-    def prependNotebook(self, title):
+    def prependUseNotebook(self, title):
         ''' prepend fullpath of file
         Add the current self.usenotebook fullpath
         '''
         return f"{self.config.notesdir}/{self.config.usenotebook}/{title}"
+
+    def prependAnotebook(self, notebook, title):
+        ''' prepend fullpath of file
+        Add the current self.usenotebook fullpath
+        '''
+        return f"{self.config.notesdir}/{notebook}/{title}"
 
 
 #==================================#
