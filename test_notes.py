@@ -3,12 +3,12 @@
 
 import unittest, os, shutil, pathlib
 from dumper import dump
-from pynotes import notes, notebook, config, notesystem
+from pynotes import Notes, Notebook, Config, Notesystem
 
 class TestNotes(unittest.TestCase):
     def setUp(self):
-        self.n = notes()
-        self.nb = notebook()
+        self.n = Notes()
+        self.nb = Notebook()
 
     def test_init(self):
         self.assertTrue(self.n.testinit)
@@ -18,96 +18,96 @@ class TestNotes(unittest.TestCase):
 
     def test_setPlaintext(self):
         self.n.create("testing CT")
-        self.n.setPlaintext('This is some text')
+        self.n.set_plaintext('This is some text')
         self.assertEqual(self.n.plaintext, 'This is some text')
 
     def test_setCiphertext(self):
         self.n.create("testing PT")
-        self.n.setCiphertext('GI&THJhO&GyoIyuOBy')
+        self.n.set_ciphertext('GI&THJhO&GyoIyuOBy')
         self.assertEqual(self.n.ciphertext, 'GI&THJhO&GyoIyuOBy')
 
     def test_saveCiphertext(self):
         self.n.create("testing CT save")
-        self.n.setCiphertext('GI&THJhO&GyoIyuOBy')
-        self.n.saveCiphertext()
-        self.assertTrue(os.path.exists(self.n.prependUseNotebook('testing_CT_save.asc')))
+        self.n.set_ciphertext('GI&THJhO&GyoIyuOBy')
+        self.n.save_ciphertext()
+        self.assertTrue(os.path.exists(self.n.prepend_use_notebook('testing_CT_save.asc')))
 
     def test_savePlaintext(self):
         self.n.create("testing PT save")
-        self.n.setPlaintext('This is some text')
-        self.n.savePlaintext()
-        self.assertTrue(os.path.exists(self.n.prependUseNotebook('testing_PT_save')))
+        self.n.set_plaintext('This is some text')
+        self.n.save_plaintext()
+        self.assertTrue(os.path.exists(self.n.prepend_use_notebook('testing_PT_save')))
 
     def test_encrypt(self):
         self.n.create("testing encrypt")
-        self.n.setPlaintext('This is some text')
+        self.n.set_plaintext('This is some text')
         self.n.encrypt()
-        self.n.saveCiphertext()
-        self.assertTrue(os.path.exists(self.n.prependUseNotebook('testing_encrypt.asc')))
+        self.n.save_ciphertext()
+        self.assertTrue(os.path.exists(self.n.prepend_use_notebook('testing_encrypt.asc')))
 
     def test_decrypt(self):
         self.n.create("testing decrypt")
-        self.n.setCiphertext('%% This is some text')
+        self.n.set_ciphertext('%% This is some text')
         self.n.decrypt()
-        self.n.savePlaintext()
-        self.assertTrue(os.path.exists(self.n.prependUseNotebook('testing_decrypt')))
+        self.n.save_plaintext()
+        self.assertTrue(os.path.exists(self.n.prepend_use_notebook('testing_decrypt')))
 
     def test_prependUseNotebook(self):
-        testpath = self.n.prependUseNotebook('demo.txt')
+        testpath = self.n.prepend_use_notebook('demo.txt')
         self.assertEqual(testpath[-35::], '__testing__/notesdir/Notes/demo.txt')
 
     def test_prependAnotebook(self):
-        testpath = self.n.prependAnotebook('Other', 'demo.txt')
+        testpath = self.n.prepend_a_notebook('Other', 'demo.txt')
         self.assertEqual(testpath[-35::], '__testing__/notesdir/Other/demo.txt')
 
     def test_importNote(self):
         self.n.plaintext = ''
-        self.n.importNote('LICENCE')
+        self.n.import_note('LICENCE')
         self.assertNotEqual(self.n.plaintext, '')
 
     def test_renamenote(self):
         self.n.create("before_rename_note")
-        self.n.savePlaintext()
+        self.n.save_plaintext()
         self.n.rename("after rename")
-        self.assertTrue(os.path.exists(self.n.prependUseNotebook('after_rename')))
-        self.assertFalse(os.path.exists(self.n.prependUseNotebook('before_rename_note')))
+        self.assertTrue(os.path.exists(self.n.prepend_use_notebook('after_rename')))
+        self.assertFalse(os.path.exists(self.n.prepend_use_notebook('before_rename_note')))
 
     def test_duplicatenote(self):
         self.n.create("before_dup_note")
-        self.n.savePlaintext()
+        self.n.save_plaintext()
         self.n.duplicate("after dup note")
-        self.n.savePlaintext()
-        self.assertTrue(os.path.exists(self.n.prependUseNotebook('after_dup_note')))
-        self.assertTrue(os.path.exists(self.n.prependUseNotebook('before_dup_note')))
+        self.n.save_plaintext()
+        self.assertTrue(os.path.exists(self.n.prepend_use_notebook('after_dup_note')))
+        self.assertTrue(os.path.exists(self.n.prepend_use_notebook('before_dup_note')))
 
     def test_moveTo(self):
         self.nb.create('Other')
         self.n.create("moveTo test")
-        self.n.savePlaintext()
-        self.assertTrue(os.path.exists(self.n.prependUseNotebook('moveTo_test')))
-        self.n.moveTo('Other')
-        self.assertTrue(os.path.exists(self.n.prependAnotebook('Other', 'moveTo_test')))
-        self.assertFalse(os.path.exists(self.n.prependUseNotebook('moveTo_test')))
+        self.n.save_plaintext()
+        self.assertTrue(os.path.exists(self.n.prepend_use_notebook('moveTo_test')))
+        self.n.move_to('Other')
+        self.assertTrue(os.path.exists(self.n.prepend_a_notebook('Other', 'moveTo_test')))
+        self.assertFalse(os.path.exists(self.n.prepend_use_notebook('moveTo_test')))
 
     def test_copyTo(self):
         self.nb.create('Other')
         self.n.create("copyTo test")
-        self.n.savePlaintext()
-        self.assertTrue(os.path.exists(self.n.prependUseNotebook('copyTo_test')))
-        self.n.copyTo('Other')
-        self.assertTrue(os.path.exists(self.n.prependAnotebook('Other','copyTo_test')))
-        self.assertTrue(os.path.exists(self.n.prependUseNotebook('copyTo_test')))
+        self.n.save_plaintext()
+        self.assertTrue(os.path.exists(self.n.prepend_use_notebook('copyTo_test')))
+        self.n.copy_to('Other')
+        self.assertTrue(os.path.exists(self.n.prepend_a_notebook('Other', 'copyTo_test')))
+        self.assertTrue(os.path.exists(self.n.prepend_use_notebook('copyTo_test')))
 
     def test_openNote(self):
 ##        import pudb; pudb.set_trace()
         self.n.create('Testing Open Note')
-        self.n.setPlaintext('This is some text\nThis is more text of the file')
+        self.n.set_plaintext('This is some text\nThis is more text of the file')
         self.n.encrypt()
 
-        self.n.saveCiphertext()
-        self.assertTrue(os.path.exists(self.n.prependUseNotebook('Testing_Open_Note.asc')))
+        self.n.save_ciphertext()
+        self.assertTrue(os.path.exists(self.n.prepend_use_notebook('Testing_Open_Note.asc')))
 
-        op = notes()
+        op = Notes()
         op.open('Testing_Open_Note.asc')
         self.assertEqual(op.notetitle, 'Testing_Open_Note')
 

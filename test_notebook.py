@@ -3,12 +3,12 @@
 
 
 import unittest, os, pathlib, shutil
-from pynotes import notebook, config, notesystem
+from pynotes import Notebook, Config, Notesystem
 
 class TestNotebooks(unittest.TestCase):
     def setUp(self):
-        self.ns = notesystem()
-        self.nb = notebook()
+        self.ns = Notesystem()
+        self.nb = Notebook()
 
     def test_init(self):
         self.assertTrue(self.nb.testinit)
@@ -29,9 +29,9 @@ class TestNotebooks(unittest.TestCase):
             shutil.rmtree(self.ns.config.notesdir + '/Another_notebook')
         except:
             pass
-        r = self.ns.getNotebooks()
+        r = self.ns.get_notebooks()
         self.nb.create('Another notebook')
-        self.assertEqual(self.ns.getNotebooks(),r + ['Another_notebook'])
+        self.assertEqual(self.ns.get_notebooks(), r + ['Another_notebook'])
 
     def test_deleteNotebook(self):
         todel = 'notebook_to_delete'

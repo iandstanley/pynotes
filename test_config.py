@@ -1,48 +1,48 @@
 # TESTING CONFIG CLASS 
 
 import unittest, os, pathlib, shutil
-from pynotes import config, notesystem
+from pynotes import Config, Notesystem
 
 class TestConfig(unittest.TestCase):
     def test_init(self):
-        n = notesystem()             # initialize notesystem as it will create NOTESDIR etc
-        c = config()
+        n = Notesystem()             # initialize notesystem as it will create NOTESDIR etc
+        c = Config()
         self.assertTrue(c.initran)   # test __init__ runs to end
 
     def test_writeConfig(self):     
-        n = notesystem()             # initialize notesystem as it will create NOTESDIR etc
+        n = Notesystem()             # initialize notesystem as it will create NOTESDIR etc
 
-        c = config(git=True)
-        c.setGPGkey(n.getDefaultGPGkey()) # fix up GPG key for tests (gets overwritten with second config() call
-        c.writeConfig()             # write a configfile with usegit = True
+        c = Config(git=True)
+        c.set_gpg_key(n.get_default_gpg_key()) # fix up GPG key for tests (gets overwritten with second config() call
+        c.write_config()             # write a configfile with usegit = True
         self.assertTrue(c.usegit)
 
-        d = config()                
-        d.readConfig()              # overwrite config with configfile
+        d = Config()
+        d.read_config()              # overwrite config with configfile
         self.assertTrue(d.usegit)
 
     def test_readConfig(self):      
-        n = notesystem()             # initialize notesystem as it will create NOTESDIR etc
+        n = Notesystem()             # initialize notesystem as it will create NOTESDIR etc
 
-        ng = config(git=False)      # setup without git
-        ng.setGPGkey(n.getDefaultGPGkey()) # fix up GPG key for tests (gets overwritten with second config() call
-        ng.writeConfig()
-        c = config()
-        c.readConfig()
+        ng = Config(git=False)      # setup without git
+        ng.set_gpg_key(n.get_default_gpg_key()) # fix up GPG key for tests (gets overwritten with second config() call
+        ng.write_config()
+        c = Config()
+        c.read_config()
         self.assertFalse(c.usegit)
 
-        wg = config(git=True)       # and without git
-        wg.setGPGkey(n.getDefaultGPGkey()) # fix up GPG key for tests (gets overwritten with second config() call
-        wg.writeConfig()
-        d = config()
-        d.readConfig()
+        wg = Config(git=True)       # and without git
+        wg.set_gpg_key(n.get_default_gpg_key()) # fix up GPG key for tests (gets overwritten with second config() call
+        wg.write_config()
+        d = Config()
+        d.read_config()
         self.assertTrue(d.usegit)
 
     def test_setGPGkey(self):
-        n = notesystem()             # initialize notesystem as it will create NOTESDIR etc
+        n = Notesystem()             # initialize notesystem as it will create NOTESDIR etc
     
         n.config.gpgkey="REMOVED"   # manually set gpg key
         before = n.config.gpgkey
-        n.config.setGPGkey(n.getDefaultGPGkey())    # reset to first private key on keyring
+        n.config.set_gpg_key(n.get_default_gpg_key())    # reset to first private key on keyring
         after = n.config.gpgkey
         self.assertNotEqual(before, after)        
