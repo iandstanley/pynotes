@@ -10,12 +10,7 @@ help:
 
 test: 	clean
 	mkdir -p $(NOTESDIR)
-#	python -m unittest test_config.py	
-#	python -m unittest test_notesystem.py	
-#	python -m unittest test_notebook.py	
-#	python -m unittest test_notes.py	
-#	python -m unittest test_open.py	
-	python -m unittest
+	python -m unittest tests/*.py
 
 debug:
 	python -m pudb try_open.py

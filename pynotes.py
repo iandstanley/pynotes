@@ -20,10 +20,8 @@ import os
 import shutil
 import datetime
 import tarfile
-import pathlib
 import gnupg  # see https://docs.red-dove.com/python-gnupg/
 
-from dumper import dump
 
 """  FEATURES TO ADD:
 X read/write config file
@@ -59,7 +57,7 @@ class Config:
     The following configuration parameters are found there:
 
         key      - GPG private key used to decrypt notes
-        usegit   - Use git repo and commiting changes 'true'/'false'
+        usegit   - Use git repo and committing changes 'true'/'false'
         spelling - Choose from 'aspell', 'ispell' or 'None'
 
     """
@@ -73,7 +71,7 @@ class Config:
         self.usenotebook = "Notes"
         self.home = os.environ["HOME"]
 
-        if git == False:
+        if git is False:
             self.usegit = False
         else:
             self.usegit = True
@@ -87,9 +85,6 @@ class Config:
             self.notesdir = self.home + "/.notes"
 
         self.configfile = f"{self.notesdir}/config"
-
-        ##        print(f"os.environ = {os.environ['NOTESDIR']}")
-        ##        print(f"config.notedir = {self.notesdir}     config.configfile = {self.configfile}")
 
         self.initran = True
 
@@ -273,9 +268,9 @@ class Notes:
         self.notetitle = title
         self.notefullpath = titlepath
 
-        ##        with open(self.notefullpath, 'w') as nf:
-        ##            nf.write('')    # touch notefile
-        ##            nf.close()
+        #        with open(self.notefullpath, 'w') as nf:
+        #            nf.write('')    # touch notefile
+        #            nf.close()
 
         return self
 
@@ -302,13 +297,13 @@ class Notes:
             self.ciphertext = ""
             self.plaintext = textcontent
 
-    def set_plaintext(self, PT):
+    def set_plaintext(self, pt):
         """Save PT parameter to object"""
-        self.plaintext = PT
+        self.plaintext = pt
 
-    def set_ciphertext(self, CT):
+    def set_ciphertext(self, ct):
         """Save CT parameter to object"""
-        self.ciphertext = CT
+        self.ciphertext = ct
 
     def save_ciphertext(self):
         """Save CT to file"""
@@ -332,7 +327,7 @@ class Notes:
 
             imp.close()
 
-    ##    TODO: encrypt and save
+    #    TODO: encrypt and save
 
     # encrypt
 
@@ -362,7 +357,8 @@ class Notes:
 
     def delete(self):
         """delete note"""
-        ##        title = title.replace(" ","_")
+        # TODO write method
+        #        title = title.replace(" ","_")
         pass
 
     def copy_to(self, notebook):
@@ -392,30 +388,26 @@ class Notes:
         self.ciphertext = "%% " + self.plaintext
         self.plaintext = ""
 
-    ##        print(f"encrypt(): ciphertext = {self.ciphertext}")
-
     def decrypt(self):
         """encrypt Plaintext to Ciphertext"""
         self.plaintext = self.ciphertext[3:]
         self.ciphertext = ""
 
-    ##        print(f"decrypt(): plaintext = {self.plaintext}")
-
-    ##    def save(self):
-    ##        """save note"""
-    ##        pass
-    ##
-    ##    def saveAs(self, filename):
-    ##        """save as note with new filename"""
-    ##        pass
-    ##
-    ##    def view(self):
-    ##        """view note"""
-    ##        pass
-    ##
-    ##    def edit(self):
-    ##        """edit note"""
-    ##        pass
+    #    def save(self):
+    #        """save note"""
+    #        pass
+    #
+    #    def saveAs(self, filename):
+    #        """save as note with new filename"""
+    #        pass
+    #
+    #    def view(self):
+    #        """view note"""
+    #        pass
+    #
+    #    def edit(self):
+    #        """edit note"""
+    #        pass
 
     def prepend_use_notebook(self, title):
         """prepend fullpath of file
