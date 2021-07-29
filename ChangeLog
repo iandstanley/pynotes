@@ -1,0 +1,136 @@
+2021-07-29  Ian Stanley <iandstanley@gmail.com>
+
+	* .idea/.gitignore, .idea/dictionaries/ian.xml,
+	.idea/inspectionProfiles/profiles_settings.xml, .idea/misc.xml,
+	.idea/pynotes.iml, .idea/workspace.xml, tests/test_config.py,
+	tests/test_notebook.py, tests/test_notesystem.py: starting to
+	refactor classes more appropriately
+
+2021-07-29  Ian Stanley <iandstanley@gmail.com>
+
+	* module.py, my.toml, pynoteslib.py, testmodule.py: refectoring lib
+
+2021-07-27  Ian Stanley <iandstanley@gmail.com>
+
+	* .idea/inspectionProfiles/profiles_settings.xml, makefile,
+	pynotes.py, test_config.py, test_notebook.py, test_notes.py,
+	test_notesystem.py: move tests & refactor PEP8
+
+2021-07-27  Ian Stanley <iandstanley@gmail.com>
+
+	* .idea/dictionaries/ian.xml, tests/test_config.py,
+	tests/test_notebook.py, tests/test_notes.py,
+	tests/test_notesystem.py: further PEP8 modifications and also move
+	tests to tests/
+
+2021-07-27  Ian Stanley <iandstanley@gmail.com>
+
+	* .idea/.gitignore, .idea/inspectionProfiles/profiles_settings.xml,
+	.idea/misc.xml, .idea/modules.xml, .idea/pynotes.iml,
+	.idea/vcs.xml, pynotes.py, test_config.py, test_notebook.py,
+	test_notes.py, test_notesystem.py: renaming to pep8
+
+2021-07-22  Ian Stanley <iandstanley@gmail.com>
+
+	* makefile, pynotes.py, test_notes.py: test changes to get right
+	path; fix opennote bug to read contents
+
+2021-07-21  Ian Stanley <iandstanley@gmail.com>
+
+	* LICENSE, pynotes.py, test_notes.py: setPlaintext(),
+	setCiphertext(), saveCiphertext(), savePlaintext() encryption to be
+	added later
+
+2021-07-21  Ian Stanley <iandstanley@gmail.com>
+
+	* LICENCE: added LICENCE
+
+2021-07-21  Ian Stanley <iandstanley@gmail.com>
+
+	* pynotes.py, test_config.py, test_notebook.py, test_notes.py,
+	test_notesystem.py: extend imports
+
+2021-07-21  Ian Stanley <iandstanley@gmail.com>
+
+	* pynotes.py, test_notebook.py: fixup
+
+2021-07-21  Ian Stanley <iandstanley@gmail.com>
+
+	* pynotes.py, test_notebook.py, test_notes.py: added use, default,
+	duplicate
+
+2021-07-21  Ian Stanley <iandstanley@gmail.com>
+
+	* pynotes.py, test_notebook.py: added rename and delete notebook
+	methods
+
+2021-07-21  Ian Stanley <iandstanley@gmail.com>
+
+	* makefile, pynotes.py, test_notebook.py, test_notesystem.py: Added
+	notebook init create rename functions
+
+2021-07-21  Ian Stanley <iandstanley@gmail.com>
+
+	* TESTING, makefile, pynotes.py, test_config.py, test_notesystem.py: 
+	restructing tests to reduce startup
+
+2021-07-21  Ian Stanley <iandstanley@gmail.com>
+
+	* .gitignore: updated .gitignore to avoid __testing__
+
+2021-07-21  Ian Stanley <iandstanley@gmail.com>
+
+	* .gitignore: updated .gitignore to avoid __testing__
+
+2021-07-21  Ian Stanley <iandstanley@gmail.com>
+
+	* pynotes.py: fixingup
+
+2021-07-21  Ian Stanley <iandstanley@gmail.com>
+
+	* : fixing merge conflicts
+
+2021-07-21  Ian Stanley <iandstanley@gmail.com>
+
+	* pynotes.py, test_notesystem.py: merge conflicts
+
+2021-07-20  Ian Stanley <iandstanley@gmail.com>
+
+	* makefile, pynotes.py, test_config.py, test_notesystem.py: # This
+	is a combination of 2 commits.  # This is the 1st commit message: config class and tests work corretly # This is the commit message #2: notesystem() class __init__ and backup() implemented
+
+2021-07-20  Ian Stanley <iandstanley@gmail.com>
+
+	* : commit 8145c613d8e3c74627e5c0bdecde07db62f1e446 Author: Ian
+	Stanley <iandstanley@gmail.com> Date:   Tue Jul 20 19:48:08 2021
+	+0100
+
+2021-07-20  Ian Stanley <iandstanley@gmail.com>
+
+	* test_config.py: added test for setting gpg key
+
+2021-07-20  Ian Stanley <iandstanley@gmail.com>
+
+	* pynotes.py, test_config.py, test_notesystem.py: added get first
+	gpg key functionality to config and notesystem
+
+2021-07-20  Ian Stanley <iandstanley@gmail.com>
+
+	* config.ini, makefile, pynotes.py, test_notesystem.py: notesystem()
+	class __init__ and backup() implemented
+
+2021-07-20  Ian Stanley <iandstanley@gmail.com>
+
+	* config.ini, makefile, pynotes.py, test_config.py,
+	test_notesystem.py: config class and tests work corretly
+
+2021-07-20  Ian Stanley <iandstanley@gmail.com>
+
+	* gnotes.py, makefile, notebook.py, notes.py, pynotes.py,
+	test_config.py, test_notebook.py, test_notes.py: starting port to
+	Python
+
+2021-07-19  Ian Stanley <iandstanley@users.noreply.github.com>
+
+	* Initial commit
+

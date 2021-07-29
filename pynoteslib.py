@@ -16,38 +16,14 @@ The following classes are implemented:
 """
 
 from configparser import ConfigParser
+import toml
 import os
 import shutil
 import datetime
 import tarfile
 import gnupg  # see https://docs.red-dove.com/python-gnupg/
 
-
-"""  FEATURES TO ADD:
-X read/write config file
-X create note
-X import note
-- edit note
-- copy note
-- move note
-- delete note
-- encrypt note
-- decrypt note
-- git status
-- git commit
-- git init (this should probably be in config
-- git log
-- git config 
-- view note
-- search notes
-- new key for gpg
-X backup notes
-- tree of directory
-- HELP 
-    """
-
 _default_config = {
-
     'gpgkey': '',
     'spelling': 'none',
     'default': 'Notes',
@@ -533,4 +509,7 @@ class Notebook:
 # ==================================#
 
 if __name__ == "__main__":
+
+    print(f"_default_config = {_default_config}")
+
     pass

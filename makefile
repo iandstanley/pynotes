@@ -28,3 +28,8 @@ pip:
 	pip install configparser
 	pip install python-gnupg	
 
+changelog:
+	git2cl > ChangeLog
+
+release_notes:
+	reno report 
