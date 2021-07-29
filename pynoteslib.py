@@ -37,7 +37,7 @@ _default_config = {
 def get_config():
     # check if config file exists if so load
     # else create config file
-    pass
+    return 'dummy'
 
 def write_config(conf):
     # write config to config file
@@ -45,7 +45,17 @@ def write_config(conf):
     pass
 
 def get_config_file():
-    pass
+    return get_notesdir() + '/config'
+
+
+def get_notesdir():
+    if "XDG_DATA_DIR" in os.environ:
+        notesdir = os.environ["XDG_DATA_DIR"] + "/.notes"
+    elif "NOTESDIR" in os.environ:
+        notesdir = os.environ["NOTESDIR"] 
+    else:
+        notesdir = os.environ['HOME'] + "/.notes"
+    return notesdir
 
 def config_file_exists():
     pass
