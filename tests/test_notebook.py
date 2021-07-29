@@ -3,7 +3,7 @@
 import unittest
 import os
 import shutil
-from pynotes import Notebook, Config, Notesystem
+from pynoteslib import Notebook, Config, Notesystem
 
 
 class TestNotebooks(unittest.TestCase):
@@ -63,3 +63,6 @@ class TestNotebooks(unittest.TestCase):
         self.assertEqual(self.nb.config.usenotebook, 'two')
         self.nb.use('one')
         self.assertEqual(self.nb.config.usenotebook, 'one')
+
+if __name__ == "__main__":
+    unittest.main()

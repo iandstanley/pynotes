@@ -2,7 +2,8 @@
 
 import unittest
 import os
-from pynotes import Config, Notesystem
+import gnupg
+from pynoteslib import Config, Notesystem
 
 
 class TestNotesystem(unittest.TestCase):
@@ -72,3 +73,6 @@ class TestNotesystemWithGIT(unittest.TestCase):
         c = Config()
         c.read_config()
         self.assertTrue(c.usegit)
+
+if __name__ == "__main__":
+    unittest.main()

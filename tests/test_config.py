@@ -47,3 +47,6 @@ class TestConfig(unittest.TestCase):
         n.config.set_gpg_key(n.get_default_gpg_key())    # reset to first private key on keyring
         after = n.config.gpgkey
         self.assertNotEqual(before, after)        
+
+if __name__ == "__main__":
+    unittest.main()
