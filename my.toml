@@ -1,0 +1,7 @@
+gpgkey = ""
+spelling = "none"
+default = "Notes"
+use = "Notes"
+home = "/home/ian"
+notesdir = ""
+configfile = ""
