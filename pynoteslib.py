@@ -33,19 +33,57 @@ _default_config = {
     'configfile': '' 
     }
 
+def init_dirs():
+    dir = get_notesdir()
+    defnb = dir + '/Notes'
+
+    if not os.path.isdir(dir):
+        os.mkdir(dir, mode=0o700)
+
+    if not os.path.isdir(dir):
+        os.mkdir(defnb, mode=0o700)
+
+    if not os.path.isdir(dir):
+        print(f"Default notebook does not exist, creating {dir + '/Notes'}")
+        os.mkdir(dir + '/Notes', mode=0o700)
+
+
+
+
 
 def get_config():
     # check if config file exists if so load
     # else create config file
-    pass
+    conf = get_config_file()
+    c = {}
+
+    with open(conf, 'r') as f:
+        toml.load(c, f)
+    print(c)
+
+    return 'dummy'
 
 def write_config(conf):
     # write config to config file
+    cf = get_config_file()
+
+    with open(cf, "w") as f:
+        toml.dump(_default_config, f)
     
     pass
 
 def get_config_file():
-    pass
+    return get_notesdir() + '/config'
+
+
+def get_notesdir():
+    if "XDG_DATA_DIR" in os.environ:
+        notesdir = os.environ["XDG_DATA_DIR"] + "/.notes"
+    elif "NOTESDIR" in os.environ:
+        notesdir = os.environ["NOTESDIR"] 
+    else:
+        notesdir = os.environ['HOME'] + "/.notes"
+    return notesdir
 
 def config_file_exists():
     pass

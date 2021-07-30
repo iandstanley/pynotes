@@ -10,10 +10,12 @@ help:
 
 test: 	clean
 	mkdir -p $(NOTESDIR)
-	python -m unittest tests/*.py
+	#	python -m unittest tests/*.py
+	#python -m unittest tests/test_config.py
+	python -m unittest test_config.py
 
 debug:
-	python -m pudb try_open.py
+	python -m pudb test_config.py
 
 tree:
 	tree -a $(NOTESDIR)
