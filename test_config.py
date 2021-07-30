@@ -1,14 +1,16 @@
 # TESTING CONFIG CLASS
 
-import unittest
 import os
+import unittest
+unittest.TestLoader.sortTestMethodsUsing = None
+
 
 # from pynotes import Config, Notesystem
 import pynoteslib as nl
 
 # from pynoteslib import *
 
-os.environ["NOTESDIR"] = "__testing__/.notes"
+os.environ["NOTESDIR"] = os.environ['HOME'] + "/pynotes/__testing__/.notes"
 test_default_config_dict = {
     "gpgkey": "",
     "spelling": "none",
@@ -26,38 +28,21 @@ class TestConfigFunctions(unittest.TestCase):
         self.assertEqual(nl._default_config, test_default_config_dict)
 
     def test_get_notesdir(self):
-        os.environ["XDG_DATA_DIR"] = "XDG"
-        os.environ["NOTESDIR"] = "NOTESDIR"
-        self.assertEqual(nl.get_notesdir(), "XDG/.notes")
-        del os.environ["XDG_DATA_DIR"]
-        self.assertEqual(nl.get_notesdir(), "NOTESDIR")
-        del os.environ["NOTESDIR"]
-        os.environ["NOTESDIR"] = "__testing__/.notes"
+        self.assertEqual(nl.get_notesdir(), os.environ['HOME'] + "/pynotes/__testing__/.notes")
 
     def test_config_file(self):
-        os.environ["XDG_DATA_DIR"] = "XDG"
-        os.environ["NOTESDIR"] = "NOTESDIR"
-        self.assertEqual(nl.get_config_file(), "XDG/.notes/config")
-        del os.environ["XDG_DATA_DIR"]
-        self.assertEqual(nl.get_config_file(), "NOTESDIR/config")
-        del os.environ["NOTESDIR"]
-        os.environ["NOTESDIR"] = "__testing__/.notes"
+        self.assertEqual(nl.get_config_file(), os.environ['HOME'] + "/pynotes/__testing__/.notes/config")
 
-    '''
-    def test_init_dirs(self):
-        conf = nl._default_config
-        nl.init_dirs()
-        nd = get_notesdir()
-        self.assertTrue(os.path.isdir(nd))
-        self.assertTrue(os.path.isdir(nd) + "/Notes")
+    def test_create_configfile(self):
+        nl.create_config()
+        self.assertTrue(os.path.exists(nl.get_config_file()))
 
-    def test_write_config(self):
+    def test__write_config(self):
         conf = nl._default_config
 
     def test_get_config(self):
         r = nl.get_config()
-        self.assertEqual(r, "dummy")
-    '''
+        self.assertEqual(r['configfile'], os.environ["NOTESDIR"] + '/config' )
 
 """
     def test_init(self):

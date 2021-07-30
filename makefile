@@ -1,7 +1,8 @@
 #
 # pynotes - (Python implementation of Standard Unix Notes)
 #
-export NOTESDIR=/home/ian/pynotes/__testing__/notesdir
+#export NOTESDIR=/home/ian/pynotes/__testing__/notesdir
+export NOTESDIR=/home/ian/pynotes/__testing__/.notes
 
 default:	test
 
@@ -10,17 +11,22 @@ help:
 
 test: 	clean
 	mkdir -p $(NOTESDIR)
-	#	python -m unittest tests/*.py
-	#python -m unittest tests/test_config.py
-	python -m unittest test_config.py
+	clear
+	python -m unittest tests/test_initdirs.py
+	python -m unittest -v test_config.py
 
 debug:
 	python -m pudb test_config.py
 
 tree:
-	tree -a $(NOTESDIR)
+	tree -a __testing__
+
+config_show:
+	cat $(NOTESDIR)/config 
+
+
 clean:
-	@rm -rf __testing__
+	@rm -rf __testing__/*
 
 compile:
 	echo compile
