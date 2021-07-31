@@ -2,34 +2,79 @@
 
 import unittest
 import os
-#from pynoteslib import Notes
-import pynoteslib
-#exit()
+from pynoteslib import *
+#import pynoteslib
+
 
 class TestNotes(unittest.TestCase):
     def test_nothing(self):
         pass
-    '''
-    def setUp(self):
-        self.n = Notes()
-        self.nb = Notebook()
 
     def test_init(self):
-        self.assertTrue(self.n.testinit)
+        my = Notes()
+        self.assertTrue(my.testinit)
+        self.assertEqual(my.title, '')
+        self.assertEqual(my.filename, '')
+        self.assertEqual(my.plaintext, '')
+        self.assertEqual(my.ciphertext, '')
 
-    def test_create_note(self):
-        self.n.create("testing create note")
+    def test_init_with_title(self):
+        my = Notes(title='this is my note title')
+        self.assertEqual('this_is_my_note_title', my.title)
+        self.assertEqual(my.filename, '')
+        self.assertEqual(my.plaintext, '')
+        self.assertEqual(my.ciphertext, '')
+
+    def test_init_with_pt(self):
+        my = Notes(title='my title', plaintext='Not so secret')
+        self.assertEqual(my.title, 'my_title')
+        self.assertEqual(my.filename, '')
+        self.assertEqual(my.plaintext, 'Not so secret')
+        self.assertEqual(my.ciphertext, '')
+
+    def test_init_with_ct(self):
+        my = Notes(title='my title', ciphertext='%% Very secret')
+        self.assertEqual(my.title, 'my_title')
+        self.assertEqual(my.filename, '')
+        self.assertEqual(my.plaintext, '')
+        self.assertEqual(my.ciphertext, '%% Very secret')
+
+    def test_init_with_pt_file(self):
+        my = Notes(title='my plain title', filename='my filename')
+        self.assertEqual(my.title, 'my_plain_title')
+        self.assertEqual(my.filename, 'my_filename')
+        self.assertEqual(my.ftitle, 'my_filename')
+        self.assertEqual(my.fext, '')
+
+    def test_init_with_ct_file(self):
+        my = Notes(title='my secret title', filename='encrypted filename.asc')
+        self.assertEqual(my.title, 'my_secret_title')
+        self.assertEqual(my.filename, 'encrypted_filename.asc')
+        self.assertEqual(my.ftitle, 'encrypted_filename')
+        self.assertEqual(my.fext, '.asc')
 
     def test_set_plaintext(self):
-        self.n.create("testing CT")
-        self.n.set_plaintext("This is some text")
-        self.assertEqual(self.n.plaintext, "This is some text")
+        my = Notes(title='this is my note title')
+        self.assertEqual('this_is_my_note_title', my.title)
+        self.assertEqual(my.filename, '')
+        self.assertEqual(my.plaintext, '')
+        self.assertEqual(my.ciphertext, '')
+        my.set_plaintext('Hello World')
+        self.assertEqual(my.plaintext, 'Hello World')
+        self.assertEqual(my.ciphertext, '')
 
     def test_set_ciphertext(self):
-        self.n.create("testing PT")
-        self.n.set_ciphertext("GI&THJhO&GyoIyuOBy")
-        self.assertEqual(self.n.ciphertext, "GI&THJhO&GyoIyuOBy")
+        my = Notes(title='this is my note title')
+        self.assertEqual('this_is_my_note_title', my.title)
+        self.assertEqual(my.filename, '')
+        self.assertEqual(my.plaintext, '')
+        self.assertEqual(my.ciphertext, '')
+        my.set_ciphertext('%% GI&THJhO&GyoIyuOBy')
+        self.assertEqual(my.plaintext, '')
+        self.assertEqual(my.ciphertext, '%% GI&THJhO&GyoIyuOBy')
 
+
+    '''
     def test_save_ciphertext(self):
         self.n.create("testing CT save")
         self.n.set_ciphertext("GI&THJhO&GyoIyuOBy")
@@ -132,5 +177,5 @@ class TestNotes(unittest.TestCase):
         )
     '''
 
-# if __name__ == "__main__":
-#     unittest.main()
+if __name__ == "__main__":
+    unittest.main()
