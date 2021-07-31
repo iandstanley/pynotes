@@ -10,13 +10,16 @@ help:
 	echo help
 
 test: 	clean
+    #clear
+	echo "NOTESDIR in makefile reads = $(NOTESDIR) "
 	mkdir -p $(NOTESDIR)
-	clear
-	python -m unittest tests/test_initdirs.py
-	python -m unittest -v test_config.py
+	python -m unittest tests/*.py
+#	python -m unittest tests/test_initdirs.py tests/test_config.py
+#	python -m unittest -v tests/test_config.py
+#test_config.py  test_encryption.py  test_initdirs.py  test_notebook.py  test_notes.py
 
 debug:
-	python -m pudb test_config.py
+	python -m pudb tests/test_config.py
 
 tree:
 	tree -a __testing__

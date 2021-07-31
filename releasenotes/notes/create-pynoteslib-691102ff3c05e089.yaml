@@ -1,0 +1,13 @@
+---
+prelude: >
+    Standard Unix Notes has now been reimplemented as a Python library 
+    enabling new CLIs and GUIs to be built.
+features:
+- The functionality of Standard Unix Notes has now been reimplemented as 
+  a python library allowing easy implementation of new CLI or GUI
+  interfaces.
+upgrade: 
+- For users of standard-unix-notes the pynoteslib module uses TOML for
+  it's configuration file. The filename remains the same but strings 
+  should be enclosed in quotes. The usegit parameter is now a bool (True 
+  or False) and therefore does not need quotes. 

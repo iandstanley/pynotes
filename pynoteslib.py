@@ -1,10 +1,5 @@
 """
-PYNOTES the Python implementation of Standard Unix Notes
-
-pynotes.py - (this file) implements the classes in a module to be loaded by the other executables.
-notes.py    - command line tool for managing notes
-notebook.py - command line tool for managing notebooks
-gnotes.py   - gui tool for managing notebooks and notes
+PYNOTESLIB the Python library implementation of Standard Unix Notes
 
 PYNOTESLIB  implements the notes() class and a number of functions to manipulate notebooks
 
@@ -26,14 +21,15 @@ _default_config = {
     "home": os.environ["HOME"],
     "notesdir": "",
     "configfile": "",
+    "usegit": False
 }
 
-
-def init_dirs():
+def _init_dirs():
     """
     init_dirs()     function to setup the NOTESDIR directory structure
 
-    init_dirs() is called by create_config()
+    This function is meant to be used internally by the module
+    _init_dirs() is called by create_config()
 
     1.  This function gets the base NOTESDIR from get_notedir() which in
         turn examines the environment variable for $NOTESDIR else uses ~/.notes
@@ -41,7 +37,7 @@ def init_dirs():
     3.  Creates first Notebook '$NOTESDIR/Notes/'
 
     :param none:
-    :return: none
+    :return none:
     """
     notesdir = get_notesdir()
 
@@ -54,12 +50,12 @@ def init_dirs():
 
 def create_config():
     """
-    create_config()     function is used to setup the notes directory structure and config file
+    create_config()     function is used to setup the notes directory structure under $NOTESDIR
+                        and TOML config file $NOTESDIR/config
     :param none:
-    :return: none
+    :return none:
     """
-    init_dirs()
-
+    _init_dirs()         # setup directory structure if needed
     conf = dict(_default_config)
 
     conf["notesdir"] = get_notesdir()
@@ -71,73 +67,76 @@ def create_config():
 def get_config():
     """
     get_config()    function reads configuration from the TOML file $NOTESDIR/config
-
+                    If 'config' file does not exist, calls create_config() to create
     :param none:
-    :return: dict:
+    :return configuration:  Returns the dict loaded from the TOML file 'config'
     """
 
-    # check if config file exists if so load
-    # else create config file
-    with open(get_config_file(), "r") as f:
-        return toml.load(f)
-
+    if config_file_exists():
+        with open(get_config_file(), "r") as f:
+            return toml.load(f)
+    else:
+        create_config()
 
 def write_config(conf):
     """
     write_config(conf)  function dumps app configuration to TOML file $NOTESDIR/config
-    :param conf:     Dictionary containing configuration
-    :return:
+    :param conf:        Dictionary containing configuration
+                        (see_default_config as a sample structure)
+    :return none:
     """
     # write config to config file
     with open(get_config_file(), "w") as configf:
         toml.dump(conf, configf)
 
-
 def get_config_file():
     """
     get_config_file()   function returns fullpath to the app configuration file
-    :return str config_file_path:
+    :return str:        returns the config file fullpath as a string
     """
     return get_notesdir() + "/config"
-
 
 def get_notesdir():
     """
     get_notesdir()      function returns fullpath to the main app directory
 
-    If $NOTESDIR is defined in environment then it returns $NOTESDIR else $HOME/.notes
+    :param none:
+    :return str:        returns the app's home folder (either $NOTESDIR or $HOME/.notes)
     """
+
     if "NOTESDIR" in os.environ:
         notesdir = os.environ["NOTESDIR"]
     else:
         notesdir = os.environ["HOME"] + "/.notes"
-    return notesdir
 
+    return notesdir
 
 def config_file_exists():
     """
     config_file_exists()    function checks to see if $NOTESDIR/config file exists
-    :return:
+    :return bool:
     """
-    pass
-
+    return os.path.exists(get_config_file())
 
 def use_git():
     """
-    use_git()   Checks to see if we are using git to manage $NOTESDIR/
+    use_git()       Checks to see if we are using git to manage $NOTESDIR/
     :return bool:   True if configuration is set to use git for commits when saving notes
     """
-    pass
+    conf =  get_config()
+    return conf['usegit']
 
 def set_git(gitstatus):
     """
     set_git(bool gitstatus)     function sets whether to use git commits when saving notes
-
-    Checks to see if we are using git to manage $NOTESDIR/
-    :return:
+                                and updates the config file accordingly
+    :param bool:        Uses boolean parameter to update configuration
+    :return dict:       returns the latest config
     """
-    pass
-
+    conf =  get_config()
+    conf['usegit'] = gitstatus
+    write_config(conf)
+    return conf
 
 def get_default_gpg_key():
     """
@@ -147,15 +146,20 @@ def get_default_gpg_key():
     return "gpg_key_default"
 
 
-def backup(self):
+def backup(conf):
+    """
+    backup()                Backup configuration, notes and notebook to tar file
+    :return:
+    """
+    # TODO Fixup to work after refactoring
     t = datetime.datetime.now()
     backupfile = (
-        f"{self.config.notesdir}/../notes_backup_{t.strftime('%Y%b%d_%H%M')}.tar"
+        f"{notesdir}/../notes_backup_{t.strftime('%Y%b%d_%H%M')}.tar"
     )
 
     try:
         tar = tarfile.open(backupfile, "w")
-        tar.add(self.config.notesdir)
+        tar.add(notesdir)
         tar.close()
         return True
 
@@ -176,7 +180,7 @@ def get_use_notebook_fullpath(self):
     return self.use_fullpath
 
 def get_notebooks(self):
-    """Return a collection of all existing notebooks"""
+    # Return a collection of all existing notebooks
     return [
         d
         for d in os.listdir(self.config.notesdir)
@@ -184,16 +188,12 @@ def get_notebooks(self):
     ]
 
 def get_notes(self, notebook):
-    """Return a collection of all notes within a specified notebook"""
+    #Return a collection of all notes within a specified notebook
     return os.listdir(notebook.fullpath)
 
 def new_key(self, key):
-    """
-    Change GPG key for all notes.
+    #     Change GPG key for all notes.
 
-    This takes a GnuPG keyId as a parameter.
-    The key is validated as a private key on the user's keyring before processing
-    """
     if not self.validate_gpg_key(key):  # return False if not valid private key
         return False
 
@@ -204,7 +204,7 @@ def new_key(self, key):
     return True
 
 def validate_gpg_key(self, key):
-    """Validates that the supplied key is a PRIVATE key"""
+    #Validates that the supplied key is a PRIVATE key
     gpg = gnupg.GPG(gnupghome=self.gnupghome)
     if gpg.list_keys(True, keys=key):
         return True
@@ -212,15 +212,13 @@ def validate_gpg_key(self, key):
         return False
 
 def prepend_use_notebook(self, title):
-    """prepend fullpath of file
-    Add the current self.usenotebook fullpath
-    """
+    #prepend fullpath of file
+ 
     return f"{self.config.notesdir}/{self.config.usenotebook}/{title}"
 
 def prepend_a_notebook(self, notebook, title):
-    """prepend fullpath of file
-    Add the current self.usenotebook fullpath
-    """
+    #prepend fullpath of file
+
     return f"{self.config.notesdir}/{notebook}/{title}"
 
 """
@@ -254,10 +252,6 @@ def create_notebook(title):
         os.mkdir(self.notebookpath, mode=0o700)
 
     return os.path.exists(self.notebookpath)
-    pass
-
-
-
 
 def rename_notebook(oldtitle, newtitle):
     """rename a notebook
