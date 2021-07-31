@@ -24,6 +24,8 @@ _default_config = {
     "usegit": False
 }
 
+GPGEXT = '.asc'
+
 def _init_dirs():
     """
     init_dirs()     function to setup the NOTESDIR directory structure
@@ -221,15 +223,6 @@ def get_notebooks():
 
 """
 
-
-def get_notebooks(self):
-    # Return a collection of all existing notebooks
-    return [
-        d
-        for d in os.listdir(self.config.notesdir)
-        if os.path.isdir(os.path.join(self.config.notesdir, d))
-    ]
-
 def get_notes(self, notebook):
     #Return a collection of all notes within a specified notebook
     return os.listdir(notebook.fullpath)
@@ -253,16 +246,6 @@ def validate_gpg_key(self, key):
         return True
     else:
         return False
-
-def prepend_use_notebook(self, title):
-    #prepend fullpath of file
- 
-    return f"{self.config.notesdir}/{self.config.usenotebook}/{title}"
-
-def prepend_a_notebook(self, notebook, title):
-    #prepend fullpath of file
-
-    return f"{self.config.notesdir}/{notebook}/{title}"
 
 """
 
@@ -342,55 +325,91 @@ class Notes:
     Notes class for handling notes objects
     """
 
-    def __init__(self):
-        self.config = Config()
-        self.config.read_config()
+    # def __init__(self, title: str, plaintext=str, ciphertext=str):
+    #     self.testinit = True
+    #     self.title = title
+    #     self.plaintext = ""
+    #     self.ciphertext = ""
+
+    def __init__(self, title='', plaintext='', ciphertext='', filename=''):
+        """
+
+        To __init__() choose from the following optional parameters:
+        :param str title:           a title for note - filename will be derived from title if given
+        :param str plaintext:
+        :param str ciphertext:
+        :param str filename:        actual filename of file () including extension, data will be restored from
+
+        Valid constructors:
+            Note()
+            Note(title='my title')
+            Note(title='my title', plaintext='this is the plaintext')
+            Note(title='my title', ciphertext='<cipher text in ascii encoded gpg format>')
+            Note(filename='my note filename.asc')
+            Note(filename='my note filename')
+        """
         self.testinit = True
-        self.plaintext = ""
-        self.ciphertext = ""
-        self.notebook = ""
-        self.notetitle = ""
-        self.notefullpath = ""
+        self.title = change_spaces(title)
+        self.plaintext = plaintext
+        self.ciphertext = ciphertext
+        self.filename = change_spaces(filename)
 
-    def create(self, title):
-        """add a note"""
-        title = title.replace(" ", "_")
-        titlepath = self.prepend_use_notebook(title)
+        self.ftitle, self.fext = os.path.splitext(self.filename)
 
-        if os.path.exists(titlepath):
-            return False
+        # if filename given process file
 
-        self.notetitle = title
-        self.notefullpath = titlepath
+        if not self.filename == '' :
 
-        #        with open(self.notefullpath, 'w') as nf:
-        #            nf.write('')    # touch notefile
-        #            nf.close()
+            if self.fext == GPGEXT :
+                print('load ciphertext from file ' + self.filename)
+                print('filename = ' + self.ftitle)
+                print('extension = ' + self.fext)
+            else:
+                print('load plaintext from file ' + self.filename)
+                print('filename = ' + self.ftitle)
+                print('extension = ' + self.fext)
 
-        return self
 
-    def open(self, filename):
-        """add a note"""
-        titlepath = self.prepend_use_notebook(filename)
 
-        ftitle, fext = os.path.splitext(filename)
+    # def create(self, title):
+    #     """add a note"""
+    #     title = change_spaces(title)
+    #     titlepath = get_fullpath(title)
+    #
+    #     if os.path.exists(titlepath):
+    #         return False
+    #
+    #     self.notetitle = title
+    #     self.notefullpath = titlepath
+    #
+    #     #        with open(self.notefullpath, 'w') as nf:
+    #     #            nf.write('')    # touch notefile
+    #     #            nf.close()
+    #
+    #     return self
 
-        if not os.path.exists(titlepath):
-            return False
-
-        self.notetitle = ftitle
-        self.notefullpath = titlepath
-
-        with open(self.notefullpath, "r") as nf:
-            textcontent = nf.read()
-            nf.close()
-
-        if fext == ".asc":
-            self.ciphertext = textcontent
-            self.plaintext = ""
-        else:
-            self.ciphertext = ""
-            self.plaintext = textcontent
+    # def open(self, filename):
+    #     """add a note"""
+    #     titlepath = self.prepend_use_notebook(filename)
+    #
+    #     ftitle, fext = os.path.splitext(filename)
+    #
+    #     if not os.path.exists(titlepath):
+    #         return False
+    #
+    #     self.notetitle = ftitle
+    #     self.notefullpath = titlepath
+    #
+    #     with open(self.notefullpath, "r") as nf:
+    #         textcontent = nf.read()
+    #         nf.close()
+    #
+    #     if fext == ".asc":
+    #         self.ciphertext = textcontent
+    #         self.plaintext = ""
+    #     else:
+    #         self.ciphertext = ""
+    #         self.plaintext = textcontent
 
     def set_plaintext(self, pt):
         """Save PT parameter to object"""
