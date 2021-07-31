@@ -10,16 +10,20 @@ help:
 	echo help
 
 test: 	clean
-    #clear
+        #clear
 	echo "NOTESDIR in makefile reads = $(NOTESDIR) "
 	mkdir -p $(NOTESDIR)
-	python -m unittest tests/*.py
-#	python -m unittest tests/test_initdirs.py tests/test_config.py
-#	python -m unittest -v tests/test_config.py
-#test_config.py  test_encryption.py  test_initdirs.py  test_notebook.py  test_notes.py
+	python -m unittest -v tests/*.py
+	@if [ $$? -eq 0 ]; then \
+	   coverage report -m ; \
+	fi
 
 debug:
 	python -m pudb tests/test_config.py
+
+coverage:
+	coverage run -m unittest 
+	coverage report  -m
 
 tree:
 	tree -a __testing__

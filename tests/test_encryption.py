@@ -10,5 +10,5 @@ class MyTestCase(unittest.TestCase):
         ct = '%% Hello World'
         self.assertEqual(nl.decrypt(ct), ct[3:])
 
-if __name__ == '__main__':
-    unittest.main()
+# if __name__ == '__main__':
+#     unittest.main()

@@ -83,11 +83,13 @@ def write_config(conf):
     write_config(conf)  function dumps app configuration to TOML file $NOTESDIR/config
     :param conf:        Dictionary containing configuration
                         (see_default_config as a sample structure)
-    :return none:
+    :return bool:       returns True on successful write of configfile
     """
     # write config to config file
+    # TODO write error handler for
     with open(get_config_file(), "w") as configf:
         toml.dump(conf, configf)
+        return True
 
 def get_config_file():
     """
@@ -166,18 +168,51 @@ def backup(conf):
     except tar.TarError as err:
         return err
 
+def get_default_notebook():
+    """
+    get_default_notebook()          Reads config file and returns what notebook is the default
+    :return:
+    """
+    conf = get_config()
+    return conf['default']
+
+def get_use_notebook():
+    """
+    get_use_notebook()      Reads config file and returns what notebook is currently used notebook
+    :return str:            returns the currently 'use'd notebook (where nnnotes will be created)
+    """
+    conf = get_config()
+    return conf['use']
+
+def set_default_notebook(nb):
+    """
+    get_default_notebook()  Reads config file and returns what notebook is the default
+    :return bool:           returns bool re success.
+    """
+    conf = get_config()
+    nb_fullpath = get_notesdir() + '/' + nb
+    if os.path.exists(nb_fullpath):
+        conf['default'] = nb
+
+    return write_config(conf)
+
+def set_use_notebook(nb):
+    """
+    get_default_notebook()  Reads config file and returns what notebook is the default
+    :return bool:           returns bool re success.
+    """
+    conf = get_config()
+    nb_fullpath = get_notesdir() + '/' + nb
+    if os.path.exists(nb_fullpath):
+        conf['use'] = nb
+
+    return write_config(conf)
+
+
+
+
 """
-def get_default_notebook(self):
-    return self.config.defaultnotebook
 
-def get_use_notebook(self):
-    return self.config.usenotebook
-
-def get_default_notebook_fullpath(self):
-    return self.default_fullpath
-
-def get_use_notebook_fullpath(self):
-    return self.use_fullpath
 
 def get_notebooks(self):
     # Return a collection of all existing notebooks
@@ -241,17 +276,24 @@ def decrypt(ciphertext):
     return plaintext
 
 
+def get_fullpath(name):
+    conf = get_config()
+    return conf['notesdir'] + '/' + name
+
+def change_spaces(str):
+    return str.replace(" ", "_")
 
 # ================ notebook functions ==================#
 
 def create_notebook(title):
+    #conf = get_config()
     notebookname = title.replace(" ", "_")
-    notebookpath = self.config.notesdir + "/" + self.notebookname
+    notebookpath = get_fullpath(title)
 
-    if not os.path.exists(self.notebookpath):
-        os.mkdir(self.notebookpath, mode=0o700)
+    if not os.path.exists(notebookpath):
+        os.mkdir(notebookpath, mode=0o700)
 
-    return os.path.exists(self.notebookpath)
+    return os.path.exists(notebookpath)
 
 def rename_notebook(oldtitle, newtitle):
     """rename a notebook
@@ -269,9 +311,8 @@ def rename_notebook(oldtitle, newtitle):
 
 def duplicate_notebook(oldtitle, newtitle):
     """duplicate a notebook"""
-    title = title.replace(" ", "_")
-    frompath = self.notebookpath
-    topath = self.config.notesdir + "/" + title
+    frompath = get_fullpath(change_spaces(oldtitle))
+    topath = get_fullpath(change_spaces(newtitle))
 
     if os.path.exists(frompath) and not os.path.exists(topath):
         shutil.copytree(frompath, topath)
@@ -279,9 +320,13 @@ def duplicate_notebook(oldtitle, newtitle):
 
 def delete_notebook(title):
     """delete notebook and notes"""
-    if os.path.exists(self.notebookpath):
-        shutil.rmtree(self.notebookpath)
-    return not os.path.exists(self.notebookpath)
+    #conf = get_config()
+    # title = title.replace(" ", "_")
+    notebookpath = get_fullpath(change_spaces(title))
+
+    if os.path.exists(notebookpath):
+        shutil.rmtree(notebookpath)
+    return not os.path.exists(notebookpath)
 
 def use_notebook(config, title):
     """use notebook"""
