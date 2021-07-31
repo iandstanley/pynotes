@@ -1,6 +1,9 @@
 # MY TESTING DIRECTORY
 __testing__/
 
+# pycharm
+.idea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
