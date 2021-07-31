@@ -1,6 +1,9 @@
 # MY TESTING DIRECTORY
 __testing__/
 
+#coverage
+htmlcov/
+
 # pycharm
 .idea/
 
