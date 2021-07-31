@@ -299,15 +299,13 @@ def rename_notebook(oldtitle, newtitle):
     """rename a notebook
     Renames existing notebook as title
     """
-    title = title.replace(" ", "_")
-    frompath = self.notebookpath
-    topath = self.config.notesdir + "/" + title
+    frompath = get_fullpath(change_spaces(oldtitle))
+    topath = get_fullpath(change_spaces(newtitle))
 
-    if os.path.exists(self.notebookpath):
+    if os.path.exists(frompath):
         os.rename(frompath, topath)
-        self.notebookpath = topath
 
-    return os.path.exists(self.notebookpath)
+    return os.path.exists(topath)
 
 def duplicate_notebook(oldtitle, newtitle):
     """duplicate a notebook"""

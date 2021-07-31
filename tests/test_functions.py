@@ -58,6 +58,13 @@ class TestFunctions(unittest.TestCase):
         self.assertTrue(nl.duplicate_notebook('testdupone', 'testduptwo'))
         self.assertTrue(os.path.exists(nl.get_fullpath('testduptwo')))
 
+    def test_rename_notebook(self):
+        cf = nl.get_config()
+        self.assertTrue(nl.create_notebook('testRenameOne'))
+        self.assertTrue(os.path.exists(nl.get_fullpath('testRenameOne')))
+        nl.rename_notebook('testRenameOne', 'testRenameTwo')
+        self.assertTrue(os.path.exists(nl.get_fullpath('testRenameTwo')))
+
     def test_delete_notebook(self):
         cf = nl.get_config()
         self.assertTrue(nl.create_notebook('testDeleteNB'))
@@ -103,10 +110,6 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(nl.get_use_notebook(), 'testSetUseNB')
         nl.set_use_notebook('Notes')
         self.assertEqual('Notes', nl.get_use_notebook())
-
-
-
-
 
     def test_set_default_notebook(self):
         cf = nl.get_config()
