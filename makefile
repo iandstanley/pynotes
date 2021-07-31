@@ -1,19 +1,21 @@
 #
 # pynotes - (Python implementation of Standard Unix Notes)
 #
-#export NOTESDIR=/home/ian/pynotes/__testing__/notesdir
-export NOTESDIR=/home/ian/pynotes/__testing__/.notes
+export NOTESDIR=/home/ian/pynotes/__testing__/notesdir
+#export NOTESDIR=/home/ian/pynotes/__testing__/.notes
 
 default:	test
 
-help:
-	echo help
+env:
+	@echo  NOTESDIR is set to $(NOTESDIR)
 
 test: 	clean
         #clear
 	echo "NOTESDIR in makefile reads = $(NOTESDIR) "
 	mkdir -p $(NOTESDIR)
-	python -m unittest -v tests/*.py
+	#python -m unittest -v tests/*.py
+	coverage run -m unittest
+	coverage html
 	@if [ $$? -eq 0 ]; then \
 	   coverage report -m ; \
 	fi
@@ -22,7 +24,12 @@ debug:
 	python -m pudb tests/test_config.py
 
 coverage:
-	coverage run -m unittest 
+	coverage run -m unittest
+	coverage html
+	coverage report  -m
+
+morecoverage:
+	coverage run -m unittest  -v 2
 	coverage report  -m
 
 tree:
@@ -33,7 +40,9 @@ config_show:
 
 
 clean:
-	@rm -rf __testing__/*
+	rm -rf __testing__/*
+	coverage erase
+	rm -rf htmlcov
 
 compile:
 	echo compile

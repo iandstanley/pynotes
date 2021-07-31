@@ -29,10 +29,10 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(nl._default_config, test_default_config_dict)
 
     def test_get_notesdir(self):
-        self.assertEqual(nl.get_notesdir(), os.environ['HOME'] + "/pynotes/__testing__/.notes")
+        self.assertEqual(nl.get_notesdir(), os.environ['NOTESDIR'])
 
     def test_config_file(self):
-        self.assertEqual(nl.get_config_file(), os.environ['HOME'] + "/pynotes/__testing__/.notes/config")
+        self.assertEqual(nl.get_config_file(), os.environ['NOTESDIR'] + "/config")
 
     def test_create_configfile(self):
         nl.create_config()
@@ -75,6 +75,22 @@ class TestFunctions(unittest.TestCase):
         self.assertTrue(os.path.exists(nl.get_fullpath('testDeleteNB')))
         self.assertTrue(nl.delete_notebook('testDeleteNB'))
         self.assertFalse(os.path.exists(nl.get_fullpath('testDeleteNB')))
+
+    def test_use_git(self):
+        conf = nl.get_config()
+        self.assertEqual(conf['usegit'], nl.use_git())
+
+    def test_set_git(self):
+        conf = nl.get_config()
+        self.assertEqual(conf['usegit'], nl.use_git())
+        nl.set_git(True)
+        conf = nl.get_config()
+        self.assertEqual(conf['usegit'], True)
+        nl.set_git(False)
+        conf = nl.get_config()
+        self.assertEqual(conf['usegit'], False)
+        self.assertEqual(conf['usegit'], nl.use_git())
+
 
     # def test_set_use_notebook(self):
     #     cf = nl.get_config()
