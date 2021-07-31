@@ -338,12 +338,6 @@ def use_notebook(config, title):
         self.config.usenotebook = title
     return
 
-def set_default_notebook(config, title):
-    """switch back to default notebook"""
-    self.config.usenotebook = self.config.defaultnotebook
-
-
-
 # ==================================#
 
 

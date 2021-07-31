@@ -48,17 +48,6 @@ class TestFunctions(unittest.TestCase):
     def test_get_fullpath(self):
         self.assertEqual(os.environ['NOTESDIR'] + '/config', nl.get_fullpath('config')  )
 
-    def test_get_use_notebook(self):
-        cf = nl.get_config()
-        self.assertEqual(cf['use'],'Notes')
-        self.assertEqual(cf['use'], nl.get_use_notebook())
-        self.assertTrue(os.path.exists(nl.get_fullpath(cf['use'])))
-
-    def test_get_default_notebook(self):
-        cf = nl.get_config()
-        self.assertEqual(cf['default'],'Notes')
-        self.assertTrue(os.path.exists(nl.get_fullpath(cf['default'])))
-
     def test_create_notebook(self):
         cf = nl.get_config()
         self.assertTrue(nl.create_notebook('testCreateNB'))
@@ -90,6 +79,45 @@ class TestFunctions(unittest.TestCase):
         conf = nl.get_config()
         self.assertEqual(conf['usegit'], False)
         self.assertEqual(conf['usegit'], nl.use_git())
+
+    def test_get_use_notebook(self):
+        cf = nl.get_config()
+        self.assertEqual(cf['use'],'Notes')
+        self.assertEqual(cf['use'], nl.get_use_notebook())
+        self.assertTrue(os.path.exists(nl.get_fullpath(cf['use'])))
+
+    def test_get_default_notebook(self):
+        cf = nl.get_config()
+        self.assertEqual(cf['default'],'Notes')
+        self.assertTrue(os.path.exists(nl.get_fullpath(cf['default'])))
+        self.assertEqual(cf['default'], nl.get_default_notebook())
+        self.assertTrue(os.path.exists(nl.get_fullpath(nl.get_default_notebook())))
+
+    def test_set_use_notebook(self):
+        cf = nl.get_config()
+        self.assertEqual(cf['use'], nl.get_use_notebook())
+        self.assertTrue(os.path.exists(nl.get_fullpath(cf['use'])))
+        nl.create_notebook('testSetUseNB')
+        self.assertTrue(os.path.exists(nl.get_fullpath('testSetUseNB')))
+        nl.set_use_notebook('testSetUseNB')
+        self.assertEqual(nl.get_use_notebook(), 'testSetUseNB')
+        nl.set_use_notebook('Notes')
+        self.assertEqual('Notes', nl.get_use_notebook())
+
+
+
+
+
+    def test_set_default_notebook(self):
+        cf = nl.get_config()
+        self.assertEqual(cf['use'], nl.get_default_notebook())
+        self.assertTrue(os.path.exists(nl.get_fullpath(cf['use'])))
+        nl.create_notebook('testSetDefNB')
+        self.assertTrue(os.path.exists(nl.get_fullpath('testSetDefNB')))
+        nl.set_default_notebook('testSetDefNB')
+        self.assertEqual(nl.get_default_notebook(), 'testSetDefNB')
+        nl.set_default_notebook('Notes')
+        self.assertEqual('Notes', nl.get_default_notebook())
 
 
     # def test_set_use_notebook(self):
