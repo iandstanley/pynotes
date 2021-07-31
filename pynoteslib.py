@@ -184,30 +184,38 @@ def get_use_notebook():
     conf = get_config()
     return conf['use']
 
-def set_default_notebook(nb):
+def default_notebook(nb):
     """
-    get_default_notebook()  Reads config file and returns what notebook is the default
+    default_notebook()      Set the default notebook (which use_notebook defaults to if given '' instead of a notebook title)
     :return bool:           returns bool re success.
     """
     conf = get_config()
-    nb_fullpath = get_notesdir() + '/' + nb
+    nb_fullpath = get_fullpath(nb)
+
     if os.path.exists(nb_fullpath):
         conf['default'] = nb
 
     return write_config(conf)
 
-def set_use_notebook(nb):
+def use_notebook(nb):
     """
-    get_default_notebook()  Reads config file and returns what notebook is the default
+    use_notebook()  Reads config file and returns what notebook is the default
     :return bool:           returns bool re success.
     """
     conf = get_config()
-    nb_fullpath = get_notesdir() + '/' + nb
+    nb_fullpath = get_fullpath(nb)
+
     if os.path.exists(nb_fullpath):
         conf['use'] = nb
 
     return write_config(conf)
 
+def get_notebooks():
+    # Return a collection of all existing notebooks
+    conf = get_config()
+
+    print(next(os.walk(conf['notesdir']))[1])
+    return next(os.walk(conf['notesdir']))[1]
 
 
 
@@ -325,16 +333,6 @@ def delete_notebook(title):
     if os.path.exists(notebookpath):
         shutil.rmtree(notebookpath)
     return not os.path.exists(notebookpath)
-
-def use_notebook(config, title):
-    """use notebook"""
-    title = title.replace(" ", "_")
-    n = self.config.notesdir + "/" + title
-    if os.path.exists(self.config.notesdir + "/" + title):
-        self.notebookname = title
-        self.notebookpath = self.config.notesdir + "/" + self.notebookname
-        self.config.usenotebook = title
-    return
 
 # ==================================#
 

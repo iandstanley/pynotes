@@ -100,38 +100,35 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(cf['default'], nl.get_default_notebook())
         self.assertTrue(os.path.exists(nl.get_fullpath(nl.get_default_notebook())))
 
-    def test_set_use_notebook(self):
+    def test_use_notebook(self):
         cf = nl.get_config()
         self.assertEqual(cf['use'], nl.get_use_notebook())
         self.assertTrue(os.path.exists(nl.get_fullpath(cf['use'])))
         nl.create_notebook('testSetUseNB')
         self.assertTrue(os.path.exists(nl.get_fullpath('testSetUseNB')))
-        nl.set_use_notebook('testSetUseNB')
+        nl.use_notebook('testSetUseNB')
         self.assertEqual(nl.get_use_notebook(), 'testSetUseNB')
-        nl.set_use_notebook('Notes')
+        nl.use_notebook('Notes')
         self.assertEqual('Notes', nl.get_use_notebook())
 
-    def test_set_default_notebook(self):
+    def test_default_notebook(self):
         cf = nl.get_config()
         self.assertEqual(cf['use'], nl.get_default_notebook())
         self.assertTrue(os.path.exists(nl.get_fullpath(cf['use'])))
         nl.create_notebook('testSetDefNB')
         self.assertTrue(os.path.exists(nl.get_fullpath('testSetDefNB')))
-        nl.set_default_notebook('testSetDefNB')
+        nl.default_notebook('testSetDefNB')
         self.assertEqual(nl.get_default_notebook(), 'testSetDefNB')
-        nl.set_default_notebook('Notes')
+        nl.default_notebook('Notes')
         self.assertEqual('Notes', nl.get_default_notebook())
 
+    def test_get_notebooks(self):
+        cf = nl.get_config()
+        # create a new notebook, and check if 'Notes' and new notebook are in the returned list
+        nl.create_notebook('testGetNB')
+        self.assertTrue(os.path.exists(nl.get_fullpath('testGetNB')))
+        self.assertNotEqual(set(['Notes', 'testGetNB']).intersection(nl.get_notebooks()), set())
 
-    # def test_set_use_notebook(self):
-    #     cf = nl.get_config()
-    #     self.assertEqual(cf['use'],'Notes')
-    #     nl.set_use_notebook(nl)
-
-    # def test_set_use_notebook(self):
-    #     cf = nl.get_config()
-    #     self.assertEqual(cf['use'],'Notes')
-    #     nl.set_use_notebook(nl)
 
 # if __name__ == "__main__":
 #     unittest.main()
