@@ -4,6 +4,7 @@ import unittest
 # import pudb; pu.db
 
 import pynoteslib as nl
+#from pynoteslib import *
 
 unittest.TestLoader.sortTestMethodsUsing = None
 
@@ -18,8 +19,9 @@ test_default_config_dict = {
     "usegit": False
 }
 
+#===========================================#
 
-class TestFunctions(unittest.TestCase):
+class TestConfigFunctions(unittest.TestCase):
     # def test_printenv(self):
     #     print('\nNOTESDIR = ' + os.environ["NOTESDIR"])
     #     print('HOME = ' + os.environ["HOME"])
@@ -45,11 +47,34 @@ class TestFunctions(unittest.TestCase):
         cf = nl.get_config()
         self.assertEqual(cf['configfile'], os.environ["NOTESDIR"] + '/config' )
 
+    def test_use_git(self):
+        conf = nl.get_config()
+        self.assertEqual(conf['usegit'], nl.use_git())
+
+    def test_set_git(self):
+        conf = nl.get_config()
+        self.assertEqual(conf['usegit'], nl.use_git())
+        nl.set_git(True)
+        conf = nl.get_config()
+        self.assertEqual(conf['usegit'], True)
+        nl.set_git(False)
+        conf = nl.get_config()
+        self.assertEqual(conf['usegit'], False)
+        self.assertEqual(conf['usegit'], nl.use_git())
+
+#=========================================#
+
+class TestPathFunctions(unittest.TestCase):
+
     def test_get_fullpath(self):
         self.assertEqual(os.environ['NOTESDIR'] + '/config', nl.get_fullpath('config'))
 
     def test_get_note_fullpath(self):
         self.assertEqual(os.environ['NOTESDIR'] + '/Notes/my_note', nl.get_note_fullpath('my_note'))
+
+#=============================================#
+
+class TestNotebookFunctions(unittest.TestCase):
 
     def test_create_notebook(self):
         cf = nl.get_config()
@@ -75,20 +100,57 @@ class TestFunctions(unittest.TestCase):
         self.assertTrue(nl.delete_notebook('testDeleteNB'))
         self.assertFalse(os.path.exists(nl.get_fullpath('testDeleteNB')))
 
-    def test_use_git(self):
-        conf = nl.get_config()
-        self.assertEqual(conf['usegit'], nl.use_git())
+#=============================================#
 
-    def test_set_git(self):
-        conf = nl.get_config()
-        self.assertEqual(conf['usegit'], nl.use_git())
-        nl.set_git(True)
-        conf = nl.get_config()
-        self.assertEqual(conf['usegit'], True)
-        nl.set_git(False)
-        conf = nl.get_config()
-        self.assertEqual(conf['usegit'], False)
-        self.assertEqual(conf['usegit'], nl.use_git())
+class TestNotefileFunctions(unittest.TestCase):
+
+    # def test_duplicate_notefile(self):
+    #     cf = nl.get_config()
+    #     my = nl.Notes(title='before dup note', plaintext='Hello World')
+    #     my.encrypt()
+    #     print(my.plaintext)
+    #     print(my.filename)
+    #     my.save_ciphertext()
+    #     self.assertTrue(os.path.exists(nl.get_note_fullpath(my.filename)))
+
+
+
+    def test_rename_notefile(self):
+        cf = nl.get_config()
+        my = nl.Notes(title='before rename note', plaintext='Hello World')
+        my.encrypt()
+        print(my.plaintext)
+        print(my.filename)
+        my.save_ciphertext()
+        self.assertTrue(os.path.exists(nl.get_note_fullpath(my.filename)))
+        nl.rename_note('before_rename_note.asc', 'after rename notemake tree')
+        self.assertTrue(os.path.exists(nl.get_note_fullpath('after_rename_note.asc')))
+
+
+    # def test_delete_notefile(self):
+    #     cf = nl.get_config()
+    #     self.assertTrue(nl.create_notebook('testDeleteNB'))
+    #     self.assertTrue(os.path.exists(nl.get_fullpath('testDeleteNB')))
+    #     self.assertTrue(nl.delete_notebook('testDeleteNB'))
+    #     self.assertFalse(os.path.exists(nl.get_fullpath('testDeleteNB')))
+
+    # def test_copy_to_notebookfile(self):
+    #     cf = nl.get_config()
+    #     self.assertTrue(nl.create_notebook('testRenameOne'))
+    #     self.assertTrue(os.path.exists(nl.get_fullpath('testRenameOne')))
+    #     nl.rename_notebook('testRenameOne', 'testRenameTwo')
+    #     self.assertTrue(os.path.exists(nl.get_fullpath('testRenameTwo')))
+
+    # def test_move_to_notebook(self):
+    #     cf = nl.get_config()
+    #     self.assertTrue(nl.create_notebook('testDeleteNB'))
+    #     self.assertTrue(os.path.exists(nl.get_fullpath('testDeleteNB')))
+    #     self.assertTrue(nl.delete_notebook('testDeleteNB'))
+    #     self.assertFalse(os.path.exists(nl.get_fullpath('testDeleteNB')))
+
+#============================================#
+
+class TestUtilityFunctions(unittest.TestCase):
 
     def test_get_use_notebook(self):
         cf = nl.get_config()

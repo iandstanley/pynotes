@@ -363,20 +363,25 @@ def import_note(filename):
 
         return mynote
 
-# def rename_note(newname):
-#     """
-#     rename_note()               Renames a note on disk inside the currently USE'd notebook
-#     :param newname:             A string containing the new filename for note
-#     :return bool:               Success or failure
-#     """
-#     newname = self.prepend_use_notebook(newname.replace(" ", "_"))
-#
-#     if not os.path.exists(self.prepend_use_notebook(self.notetitle)):
-#         return False
-#
-#     shutil.move(self.prepend_use_notebook(self.notetitle), newname)
-#
-#     return os.path.exists(newname)
+def rename_note(oldname, newname):
+    """
+    rename_note()               Renames a note on disk inside the currently USE'd notebook
+    :param oldname:             A string containing the old filename for note
+    :param newname:             A string containing the new filename for note
+    :return bool:               Success or failure
+    """
+    oldname = change_spaces(get_note_fullpath(oldname))
+    newname = change_spaces(get_note_fullpath(newname))
+
+    _ext = ''
+    _ext = os.path.splitext(oldname)[1]
+
+    if not os.path.exists(oldname):
+        return False
+
+    shutil.move(oldname, newname + _ext)
+
+    return os.path.exists(newname)
 
 # def duplicate_note(newname):
 #     """
@@ -460,7 +465,7 @@ class Notes:
 
             save_ciphertext()       save ciphertext to file named self.filename + '.asc'
                                     in currently USE'd notebook
-            save_plainntext()       save plaintext to file named self.filename
+            save_plaintext()       save plaintext to file named self.filename
                                     in currently USE'd notebook
 
             load_note()             loads the contents of self.filename into note
