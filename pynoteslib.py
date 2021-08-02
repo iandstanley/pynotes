@@ -213,12 +213,12 @@ def use_notebook(nb):
     return write_config(conf)
 
 def get_notebooks():
-    # Return a collection of all existing notebooks
+    """
+    get_notebooks()         Returns a list of all notebooks in NOTESDIR
+    :return list:
+    """
     conf = get_config()
-
-    print(next(os.walk(conf['notesdir']))[1])
     return next(os.walk(conf['notesdir']))[1]
-
 
 
 """
@@ -331,28 +331,158 @@ def delete_notebook(title):
         shutil.rmtree(notebookpath)
     return not os.path.exists(notebookpath)
 
-# ==================================#
+# ================= Note helper functions =================#
+
+def import_note(filename):
+    """
+    import_note()       Creates a note from a file assigning to plaintext or
+                        ciphertext depending on file extension
+
+    :param filename:    fullpath of filename
+    :return note:       returns an object of class note containing contents of file
+    """
+    if os.path.exists(filename):
+
+        mynote = Notes(filename)
+        _title, _ext = os.path.splitext(mynote.filename)
+
+        if _ext == GPGEXT:
+
+            # load cyphertext
+            with open(mynote.filename, "r") as outp:
+                mynote.ciphertext = outp.read()
+                mynote.plaintext = ''
+
+        else:
+            # load plaintext
+            with open(mynote.title, "r") as outp:
+                mynote.plaintext = outp.read()
+                mynote.ciphertext = ''
+
+        outp.close()
+
+        return mynote
+
+# def rename_note(newname):
+#     """
+#     rename_note()               Renames a note on disk inside the currently USE'd notebook
+#     :param newname:             A string containing the new filename for note
+#     :return bool:               Success or failure
+#     """
+#     newname = self.prepend_use_notebook(newname.replace(" ", "_"))
+#
+#     if not os.path.exists(self.prepend_use_notebook(self.notetitle)):
+#         return False
+#
+#     shutil.move(self.prepend_use_notebook(self.notetitle), newname)
+#
+#     return os.path.exists(newname)
+
+# def duplicate_note(newname):
+#     """
+#     duplicate_note(newname)     Duplicates a note on disk inside the currently USE'd notebook
+#     :param newname:             A string containing the new filename for note
+#     :return bool:               Success or failure
+#     """
+#     newname = self.prepend_use_notebook(newname.replace(" ", "_"))
+#
+#     if not os.path.exists(self.prepend_use_notebook(self.notetitle)):
+#         return False
+#
+#     shutil.copy2(self.prepend_use_notebook(self.notetitle), newname)
+#
+#     return os.path.exists(newname)
+
+# def delete_note(filename):
+#     """
+#     delete_note()               Deletes a note on disk inside the currently USE'd notebook
+#     :param filename:            A string containing the filename of note to be deleted
+#     :return bool:               Success or failure
+#     """
+#     # TODO write method
+#     #        title = title.replace(" ","_")
+#     pass
+
+# def copy_to_notebook(filename, notebook):
+#     """
+#     copy_to_notebook()          Copies note from current USE'd notebook to another notebook
+#     :param filename:            A string containing the filename of note to be copied
+#     :param notebook:            A string containing the target notebook name
+#     :return bool:               Success or failure
+#     """
+#     newname = self.prepend_a_notebook(notebook, self.notetitle)
+#     if os.path.exists(newname):
+#         return False
+#
+#     shutil.copy2(self.prepend_use_notebook(self.notetitle), newname)
+#
+#     return os.path.exists(newname)
+
+# def move_to_notebook(filename, notebook):
+#     """
+#     move_to_notebook()          Moves a note from the currently USE'd notebook to another notebook
+#     :param filename:            A string containing the filename to move
+#     :param notebook:            A string containing the target notebook name
+#     :return bool:               Success or failure
+#     """    newname = self.prepend_a_notebook(notebook, self.notetitle)
+#
+#     if not os.path.exists(self.prepend_use_notebook(self.notetitle)):
+#         return False
+#
+#     shutil.move(self.prepend_use_notebook(self.notetitle), newname)
+#
+#     return os.path.exists(newname)
 
 
 class Notes:
     """
-    Notes class for handling notes objects
+    class Notes:        Notes class for handling notes objects
+
+    Attributes:
+                title   title of note
+                filename            filename of note. If specified at object creation,
+                                    the instance will load from the specified filename
+                                    from inside the USE'd notebook
+                ciphertext          string containing the ciphertext of note
+                plaintext           string containing the plaintext of note
+
+                NB only one of either ciphertext or plaintext should be set at any time.
+                Use set_plaintext() or set_ciphertext methods to ensure the other is set to ''
+
+                _ftitle, _fext      filename and extension used internally in object creation only
+                                    and not intended for application use as they are not updated
+    Methods:
+            __init__()              Instantiates object of type note: optional parameters
+                                    see __init__() for details of valid constructor uses
+
+            set_plaintext(str)      sets plaintext to string and ciphertext to ''
+            set_ciphertext(str)     sets plaintext to '' and ciphertext to string
+
+            save_ciphertext()       save ciphertext to file named self.filename + '.asc'
+                                    in currently USE'd notebook
+            save_plainntext()       save plaintext to file named self.filename
+                                    in currently USE'd notebook
+
+            load_note()             loads the contents of self.filename into note
+            load_ciphertext()       handler for load_note() for filenames with extension .asc
+            load_plaintext()        handler for load_note() for filenames without extension .asc
+
+            encrypt()               encrypt note clearing plaintext
+            decrypt()               decrypt note clearing ciphertext
     """
 
-    # def __init__(self, title: str, plaintext=str, ciphertext=str):
-    #     self.testinit = True
-    #     self.title = title
-    #     self.plaintext = ""
-    #     self.ciphertext = ""
 
     def __init__(self, title='', plaintext='', ciphertext='', filename=''):
         """
+        __init__(self, title='', plaintext='', ciphertext='', filename='')  class constructor
 
         To __init__() choose from the following optional parameters:
         :param str title:           a title for note - filename will be derived from title if given
         :param str plaintext:
         :param str ciphertext:
-        :param str filename:        actual filename of file () including extension, data will be restored from
+        :param str filename:        actual filename of file () including extension,
+                                    data will be restored from the file called filename
+                                    from the current USE'd notebook
 
         Valid constructors:
             Note()
@@ -361,6 +491,10 @@ class Notes:
             Note(title='my title', ciphertext='<cipher text in ascii encoded gpg format>')
             Note(filename='my note filename.asc')
             Note(filename='my note filename')
+
+        NB:     Features like editing a note should be handled by the app that uses this library
+                eg. create a note or load it, decrypt it then edit the self.plaintext
+                    before encrypting and saving again
         """
         self.testinit = True
         self.title = change_spaces(title)
@@ -368,62 +502,13 @@ class Notes:
         self.ciphertext = ciphertext
         self.filename = change_spaces(filename)
 
-        self.ftitle, self.fext = os.path.splitext(self.filename)
+        self._ftitle, self._fext = os.path.splitext(self.filename)
 
         # if filename given process file
 
         if not self.filename == '' :
+            self.load_note(self.filename)
 
-            if self.fext == GPGEXT :
-                print('load ciphertext from file ' + self.filename)
-                print('filename = ' + self.ftitle)
-                print('extension = ' + self.fext)
-            else:
-                print('load plaintext from file ' + self.filename)
-                print('filename = ' + self.ftitle)
-                print('extension = ' + self.fext)
-
-
-
-    # def create(self, title):
-    #     """add a note"""
-    #     title = change_spaces(title)
-    #     titlepath = get_fullpath(title)
-    #
-    #     if os.path.exists(titlepath):
-    #         return False
-    #
-    #     self.notetitle = title
-    #     self.notefullpath = titlepath
-    #
-    #     #        with open(self.notefullpath, 'w') as nf:
-    #     #            nf.write('')    # touch notefile
-    #     #            nf.close()
-    #
-    #     return self
-
-    # def open(self, filename):
-    #     """add a note"""
-    #     titlepath = self.prepend_use_notebook(filename)
-    #
-    #     ftitle, fext = os.path.splitext(filename)
-    #
-    #     if not os.path.exists(titlepath):
-    #         return False
-    #
-    #     self.notetitle = ftitle
-    #     self.notefullpath = titlepath
-    #
-    #     with open(self.notefullpath, "r") as nf:
-    #         textcontent = nf.read()
-    #         nf.close()
-    #
-    #     if fext == ".asc":
-    #         self.ciphertext = textcontent
-    #         self.plaintext = ""
-    #     else:
-    #         self.ciphertext = ""
-    #         self.plaintext = textcontent
 
     def set_plaintext(self, pt):
         """
@@ -446,109 +531,86 @@ class Notes:
         self.plaintext = ''
 
     def save_ciphertext(self):
-        """Save CT to file"""
+        """
+        save_ciphertext()           Saves Ciphertext of note to file named self.filename
+        :return:
+        """
         # TODO add exception handling
         with open(get_note_fullpath(self.title + ".asc"), "w") as outp:
             outp.write(self.ciphertext)
 
+        outp.close()
+
     def save_plaintext(self):
-        """Save PT to file"""
+        """
+        save_plaintext()           Saves plaintext of note to file named self.filename
+        :return:
+        """
         # TODO add exception handling
         with open(get_note_fullpath(self.title), "w") as outp:
             outp.write(self.plaintext)
 
-    def import_note(self, filename):
-        """import a note from a file"""
-        if not os.path.exists(filename):
+        outp.close()
+
+    def load_ciphertext(self):
+        """
+        load_ciphertext()           Load Ciphertext of note to file named self.filename
+        :return:
+        """
+        # TODO add exception handling
+        with open(get_note_fullpath(self.filename), "r") as outp:
+            self.ciphertext = outp.read()
+            self.plaintext = ''
+
+        outp.close()
+
+    def load_plaintext(self):
+        """
+        load_plaintext()           Load plaintext of note to file named self.filename
+        :return:
+        """
+        # TODO add exception handling
+        with open(get_note_fullpath(self.title), "r") as outp:
+            self.plaintext = outp.read()
+            self.ciphertext = ''
+
+        outp.close()
+
+    def load_note(self, filename):
+        """
+        load_note()         loads a note from a file assigning to plaintext or
+                            ciphertext depending on file extension
+                            note 'filename' should exist in
+
+        :param filename:    fullpath of filename
+        (nb. class init(filename="xxx" will call import_note with the full path of xxx inside the USE'd notebook)
+
+        :return bool:       returns success or failure
+        """
+        if not os.path.exists(get_note_fullpath(filename)):
             return False
 
-        with open(filename, "r") as imp:
-            self.plaintext = imp.read()
-            self.notetitle = filename.replace(" ", "_")
-            self.notefullpath = self.prepend_use_notebook(filename)
+        _title, _ext = os.path.splitext(self.filename)
 
-            imp.close()
+        if _ext == GPGEXT:
+            self.load_ciphertext()
+        else:
+            self.load_plaintext()
 
-    def rename(self, newname):
-        """rename a note"""
-        newname = self.prepend_use_notebook(newname.replace(" ", "_"))
-
-        if not os.path.exists(self.prepend_use_notebook(self.notetitle)):
-            return False
-
-        shutil.move(self.prepend_use_notebook(self.notetitle), newname)
-
-        return os.path.exists(newname)
-
-    def duplicate(self, newname):
-        """duplicate a note"""
-        newname = self.prepend_use_notebook(newname.replace(" ", "_"))
-
-        if not os.path.exists(self.prepend_use_notebook(self.notetitle)):
-            return False
-
-        shutil.copy2(self.prepend_use_notebook(self.notetitle), newname)
-
-        return os.path.exists(newname)
-
-    def delete(self):
-        """delete note"""
-        # TODO write method
-        #        title = title.replace(" ","_")
-        pass
-
-    def copy_to(self, notebook):
-        """copy a note to another notebook"""
-        newname = self.prepend_a_notebook(notebook, self.notetitle)
-        if os.path.exists(newname):
-            return False
-
-        shutil.copy2(self.prepend_use_notebook(self.notetitle), newname)
-
-        return os.path.exists(newname)
-
-    def move_to(self, notebook):
-        """move a note to new notebook"""
-        newname = self.prepend_a_notebook(notebook, self.notetitle)
-
-        if not os.path.exists(self.prepend_use_notebook(self.notetitle)):
-            return False
-
-        shutil.move(self.prepend_use_notebook(self.notetitle), newname)
-
-        return os.path.exists(newname)
+        return True
 
     def encrypt(self):
         """encrypt Plaintext to Ciphertext"""
         # dummy encryption
-        self.ciphertext = "%% " + self.plaintext
+        self.ciphertext = encrypt(self.plaintext)
         self.plaintext = ""
 
     def decrypt(self):
         """encrypt Plaintext to Ciphertext"""
-        self.plaintext = self.ciphertext[3:]
+        self.plaintext = decrypt(self.ciphertext)
         self.ciphertext = ""
-
-    #    def save(self):
-    #        """save note"""
-    #        pass
-    #
-    #    def saveAs(self, filename):
-    #        """save as note with new filename"""
-    #        pass
-    #
-    #    def view(self):
-    #        """view note"""
-    #        pass
-    #
-    #    def edit(self):
-    #        """edit note"""
-    #        pass
-
 
 
 if __name__ == "__main__":
-
-    print(f"_default_config = {_default_config}")
 
     pass

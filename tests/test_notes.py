@@ -4,7 +4,7 @@ import unittest
 import os
 from pynoteslib import *
 #import pynoteslib
-
+#import pudb; pu.db
 
 class TestNotesClassInitiators(unittest.TestCase):
     def test_nothing(self):
@@ -43,15 +43,15 @@ class TestNotesClassInitiators(unittest.TestCase):
         my = Notes(title='my plain title', filename='my filename')
         self.assertEqual(my.title, 'my_plain_title')
         self.assertEqual(my.filename, 'my_filename')
-        self.assertEqual(my.ftitle, 'my_filename')
-        self.assertEqual(my.fext, '')
+        self.assertEqual(my._ftitle, 'my_filename')
+        self.assertEqual(my._fext, '')
 
     def test_init_with_ct_file(self):
         my = Notes(title='my secret title', filename='encrypted filename.asc')
         self.assertEqual(my.title, 'my_secret_title')
         self.assertEqual(my.filename, 'encrypted_filename.asc')
-        self.assertEqual(my.ftitle, 'encrypted_filename')
-        self.assertEqual(my.fext, '.asc')
+        self.assertEqual(my._ftitle, 'encrypted_filename')
+        self.assertEqual(my._fext, '.asc')
 
 class TestNotesSetText(unittest.TestCase):
     def test_set_plaintext(self):
@@ -94,9 +94,7 @@ class TestNoteSaveLoadNotes(unittest.TestCase):
         n = Notes(title="testing CT save")
         n.set_ciphertext("%% GI&THJhO&GyoIyuOBy")
         n.save_ciphertext()
-        self.assertTrue(
-            os.path.exists(os.path.exists(get_note_fullpath("testing_CT_save.asc")))
-        )
+        self.assertTrue(os.path.exists(os.path.exists(get_note_fullpath("testing_CT_save.asc"))))
 
     def test_save_plaintext(self):
         n = Notes(title="testing PT save")
@@ -104,79 +102,38 @@ class TestNoteSaveLoadNotes(unittest.TestCase):
         n.save_plaintext()
         self.assertTrue(os.path.exists(get_note_fullpath("testing_PT_save")))
 
-    '''
+    def test_load_ciphertext(self):
+        n1 = Notes(title="testing CT load")
+        n1.set_ciphertext("%% GI&THJhO&GyoIyuOBy")
+        n1.save_ciphertext()
+        self.assertTrue(os.path.exists(get_note_fullpath("testing_CT_load.asc")))
+        n2 = Notes(filename="testing_CT_load.asc")
+        self.assertTrue(os.path.exists(get_note_fullpath("testing_CT_load.asc")))
+        self.assertEqual(n1.ciphertext, n2.ciphertext)
+        self.assertEqual(n1.plaintext, n2.plaintext)
+        n3 = Notes()
+        n3.filename="testing_CT_load.asc"
+        n3.load_ciphertext()
+        self.assertTrue(os.path.exists(get_note_fullpath("testing_CT_load.asc")))
+        self.assertEqual(n1.ciphertext, n3.ciphertext)
+        self.assertEqual(n1.plaintext, n3.plaintext)
 
-    def test_prepend_use_notebook(self):
-        testpath = self.n.prepend_use_notebook("demo.txt")
-        self.assertEqual(testpath[-35::], "__testing__/notesdir/Notes/demo.txt")
+    def test_load_plaintext(self):
+        n1 = Notes(title="testing PT save")
+        n1.set_plaintext("This is some text")
+        n1.save_plaintext()
+        self.assertTrue(os.path.exists(get_note_fullpath("testing_PT_save")))
+        n2 = Notes()
 
-    def test_prepend_a_notebook(self):
-        testpath = self.n.prepend_a_notebook("Other", "demo.txt")
-        self.assertEqual(testpath[-35::], "__testing__/notesdir/Other/demo.txt")
+    def test_import_note(self):     # imports a note from full pathname file
+        n = import_note('/etc/motd')
+        self.assertNotEqual(n.plaintext, "")
+        self.assertEqual(n.ciphertext, "")
 
-    def test_import_note(self):
-        self.n.plaintext = ""
-        self.n.import_note("LICENCE")
-        self.assertNotEqual(self.n.plaintext, "")
-
+class TestNoteFileFunctions(unittest.TestCase):
     def test_rename_note(self):
-        self.n.create("before_rename_note")
-        self.n.save_plaintext()
-        self.n.rename("after rename")
-        self.assertTrue(os.path.exists(self.n.prepend_use_notebook("after_rename")))
-        self.assertFalse(
-            os.path.exists(self.n.prepend_use_notebook("before_rename_note"))
-        )
+        pass
 
-    def test_duplicate_note(self):
-        self.n.create("before_dup_note")
-        self.n.save_plaintext()
-        self.n.duplicate("after dup note")
-        self.n.save_plaintext()
-        self.assertTrue(os.path.exists(self.n.prepend_use_notebook("after_dup_note")))
-        self.assertTrue(os.path.exists(self.n.prepend_use_notebook("before_dup_note")))
-
-    def test_move_to(self):
-        self.nb.create("Other")
-        self.n.create("moveTo test")
-        self.n.save_plaintext()
-        self.assertTrue(os.path.exists(self.n.prepend_use_notebook("moveTo_test")))
-        self.n.move_to("Other")
-        self.assertTrue(
-            os.path.exists(self.n.prepend_a_notebook("Other", "moveTo_test"))
-        )
-        self.assertFalse(os.path.exists(self.n.prepend_use_notebook("moveTo_test")))
-
-    def test_copy_to(self):
-        self.nb.create("Other")
-        self.n.create("copyTo test")
-        self.n.save_plaintext()
-        self.assertTrue(os.path.exists(self.n.prepend_use_notebook("copyTo_test")))
-        self.n.copy_to("Other")
-        self.assertTrue(
-            os.path.exists(self.n.prepend_a_notebook("Other", "copyTo_test"))
-        )
-        self.assertTrue(os.path.exists(self.n.prepend_use_notebook("copyTo_test")))
-
-    def test_open_note(self):
-        self.n.create("Testing Open Note")
-        self.n.set_plaintext("This is some text\nThis is more text of the file")
-        self.n.encrypt()
-
-        self.n.save_ciphertext()
-        self.assertTrue(
-            os.path.exists(self.n.prepend_use_notebook("Testing_Open_Note.asc"))
-        )
-
-        op = Notes()
-        op.open("Testing_Open_Note.asc")
-        self.assertEqual(op.notetitle, "Testing_Open_Note")
-
-        op.decrypt()
-        self.assertEqual(
-            op.plaintext, "This is some text\nThis is more text of the file"
-        )
-    '''
 
 if __name__ == "__main__":
     unittest.main()

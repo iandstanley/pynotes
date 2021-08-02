@@ -22,7 +22,7 @@ test: 	clean
 	fi
 
 debug:
-	python -m pudb tests/test_config.py
+	python -m pudb tests/test_notes.py
 
 coverage:
 	coverage run -m unittest
