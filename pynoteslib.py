@@ -181,7 +181,7 @@ def get_default_notebook():
 def get_use_notebook():
     """
     get_use_notebook()      Reads config file and returns what notebook is currently used notebook
-    :return str:            returns the currently 'use'd notebook (where nnnotes will be created)
+    :return str:            returns the currently 'use'd notebook (where notes will be created)
     """
     conf = get_config()
     return conf['use']
@@ -268,8 +268,22 @@ def decrypt(ciphertext):
 
 
 def get_fullpath(name):
+    """
+    get_fullpath(name)          Return full pathname of passed parameter
+    :param name:                A directory (Notebook), filename ('config' file) or expression ('WorkNotebook' + filename)
+    :return str:                Returns the full path in the filesystem for 'name' UNDER the NOTESDIR
+    """
     conf = get_config()
     return conf['notesdir'] + '/' + name
+
+def get_note_fullpath(note):
+    """
+    get_use_fullpath(note)      Returns the full pathname of a note within the currently USE'd Notebook
+    :param note:                title (or filename) of a note
+    :return str:                Returns full path to a no
+    """
+    conf = get_config()
+    return conf['notesdir'] + '/' + conf['use'] + '/' + change_spaces(note)
 
 def change_spaces(str):
     return str.replace(" ", "_")
@@ -412,21 +426,35 @@ class Notes:
     #         self.plaintext = textcontent
 
     def set_plaintext(self, pt):
+        """
+        set_plaintext(pt)           Sets self.plaintext = pt & self.ciphertext = ''
+        :param pt:                  String containing plaintext
+        :return none:
+        """
         """Save PT parameter to object"""
         self.plaintext = pt
+        self.ciphertext = ''
 
     def set_ciphertext(self, ct):
+        """
+        set_ciphertext(ct)          Sets self.ciphertext = ct & self.plaintext = ''
+        :param ct:
+        :return:
+        """
         """Save CT parameter to object"""
         self.ciphertext = ct
+        self.plaintext = ''
 
     def save_ciphertext(self):
         """Save CT to file"""
-        with open(self.prepend_use_notebook(self.notetitle + ".asc"), "w") as outp:
+        # TODO add exception handling
+        with open(get_note_fullpath(self.title + ".asc"), "w") as outp:
             outp.write(self.ciphertext)
 
     def save_plaintext(self):
         """Save PT to file"""
-        with open(self.prepend_use_notebook(self.notetitle), "w") as outp:
+        # TODO add exception handling
+        with open(get_note_fullpath(self.title), "w") as outp:
             outp.write(self.plaintext)
 
     def import_note(self, filename):

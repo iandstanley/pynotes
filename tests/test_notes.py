@@ -6,7 +6,7 @@ from pynoteslib import *
 #import pynoteslib
 
 
-class TestNotes(unittest.TestCase):
+class TestNotesClassInitiators(unittest.TestCase):
     def test_nothing(self):
         pass
 
@@ -53,6 +53,7 @@ class TestNotes(unittest.TestCase):
         self.assertEqual(my.ftitle, 'encrypted_filename')
         self.assertEqual(my.fext, '.asc')
 
+class TestNotesSetText(unittest.TestCase):
     def test_set_plaintext(self):
         my = Notes(title='this is my note title')
         self.assertEqual('this_is_my_note_title', my.title)
@@ -73,37 +74,37 @@ class TestNotes(unittest.TestCase):
         self.assertEqual(my.plaintext, '')
         self.assertEqual(my.ciphertext, '%% GI&THJhO&GyoIyuOBy')
 
+class TestNoteEncryptAndDecrypt(unittest.TestCase):
+    def test_encrypt(self):
+        n = Notes(title='testing encrypt')
+        n.set_plaintext("This is some text")
+        n.encrypt()
+        n.save_ciphertext()
+        self.assertTrue( os.path.exists(get_note_fullpath(n.filename)))
 
-    '''
+    def test_decrypt(self):
+        n = Notes(title="testing decrypt")
+        n.set_ciphertext("%% This is some text")
+        n.decrypt()
+        n.save_plaintext()
+        self.assertTrue(os.path.exists(get_note_fullpath("testing_decrypt")))
+
+class TestNoteSaveLoadNotes(unittest.TestCase):
     def test_save_ciphertext(self):
-        self.n.create("testing CT save")
-        self.n.set_ciphertext("GI&THJhO&GyoIyuOBy")
-        self.n.save_ciphertext()
+        n = Notes(title="testing CT save")
+        n.set_ciphertext("%% GI&THJhO&GyoIyuOBy")
+        n.save_ciphertext()
         self.assertTrue(
-            os.path.exists(self.n.prepend_use_notebook("testing_CT_save.asc"))
+            os.path.exists(os.path.exists(get_note_fullpath("testing_CT_save.asc")))
         )
 
     def test_save_plaintext(self):
-        self.n.create("testing PT save")
-        self.n.set_plaintext("This is some text")
-        self.n.save_plaintext()
-        self.assertTrue(os.path.exists(self.n.prepend_use_notebook("testing_PT_save")))
+        n = Notes(title="testing PT save")
+        n.set_plaintext("This is some text")
+        n.save_plaintext()
+        self.assertTrue(os.path.exists(get_note_fullpath("testing_PT_save")))
 
-    def test_encrypt(self):
-        self.n.create("testing encrypt")
-        self.n.set_plaintext("This is some text")
-        self.n.encrypt()
-        self.n.save_ciphertext()
-        self.assertTrue(
-            os.path.exists(self.n.prepend_use_notebook("testing_encrypt.asc"))
-        )
-
-    def test_decrypt(self):
-        self.n.create("testing decrypt")
-        self.n.set_ciphertext("%% This is some text")
-        self.n.decrypt()
-        self.n.save_plaintext()
-        self.assertTrue(os.path.exists(self.n.prepend_use_notebook("testing_decrypt")))
+    '''
 
     def test_prepend_use_notebook(self):
         testpath = self.n.prepend_use_notebook("demo.txt")
