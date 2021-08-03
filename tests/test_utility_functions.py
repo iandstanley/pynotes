@@ -1,4 +1,3 @@
-
 import os
 import unittest
 # import pudb; pu.db
@@ -7,17 +6,6 @@ import pynoteslib as nl
 #from pynoteslib import *
 
 unittest.TestLoader.sortTestMethodsUsing = None
-
-test_default_config_dict = {
-    "gpgkey": "",
-    "spelling": "none",
-    "default": "Notes",
-    "use": "Notes",
-    "home": "/home/ian",
-    "notesdir": "",
-    "configfile": "",
-    "usegit": False
-}
 
 
 class TestUtilityFunctions(unittest.TestCase):
@@ -63,7 +51,3 @@ class TestUtilityFunctions(unittest.TestCase):
         nl.create_notebook('testGetNB')
         self.assertTrue(os.path.exists(nl.get_fullpath('testGetNB')))
         self.assertNotEqual(set(['Notes', 'testGetNB']).intersection(nl.get_notebooks()), set())
-
-
-# if __name__ == "__main__":
-#     unittest.main()

@@ -1,5 +1,3 @@
-# TESTING NOTES
-
 import unittest
 import os
 from pynoteslib import *
@@ -21,7 +19,3 @@ class TestNoteEncryptAndDecrypt(unittest.TestCase):
         n.decrypt()
         n.save_plaintext()
         self.assertTrue(os.path.exists(get_note_fullpath("testing_decrypt")))
-
-
-if __name__ == "__main__":
-    unittest.main()

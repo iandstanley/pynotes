@@ -1,5 +1,3 @@
-# TESTING NOTES
-
 import unittest
 import os
 from pynoteslib import *
@@ -47,8 +45,3 @@ class TestNoteSaveLoadNotes(unittest.TestCase):
         n = import_note('/etc/motd')
         self.assertNotEqual(n.plaintext, "")
         self.assertEqual(n.ciphertext, "")
-
-
-
-if __name__ == "__main__":
-    unittest.main()

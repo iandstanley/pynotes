@@ -1,5 +1,3 @@
-# TESTING NOTES
-
 import unittest
 import os
 from pynoteslib import *
@@ -52,7 +50,3 @@ class TestNotesClassInitiators(unittest.TestCase):
         self.assertEqual(my.filename, 'encrypted_filename.asc')
         self.assertEqual(my._ftitle, 'encrypted_filename')
         self.assertEqual(my._fext, '.asc')
-
-
-if __name__ == "__main__":
-    unittest.main()

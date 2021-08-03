@@ -1,5 +1,3 @@
-# TESTING NOTES
-
 import unittest
 import os
 from pynoteslib import *
@@ -27,7 +25,3 @@ class TestNotesSetText(unittest.TestCase):
         my.set_ciphertext('%% GI&THJhO&GyoIyuOBy')
         self.assertEqual(my.plaintext, '')
         self.assertEqual(my.ciphertext, '%% GI&THJhO&GyoIyuOBy')
-
-
-if __name__ == "__main__":
-    unittest.main()

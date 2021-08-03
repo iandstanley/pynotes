@@ -1,4 +1,3 @@
-
 import os
 import unittest
 # import pudb; pu.db
@@ -19,12 +18,8 @@ test_default_config_dict = {
     "usegit": False
 }
 
-#===========================================#
 
 class TestConfigFunctions(unittest.TestCase):
-    # def test_printenv(self):
-    #     print('\nNOTESDIR = ' + os.environ["NOTESDIR"])
-    #     print('HOME = ' + os.environ["HOME"])
 
     def test_read_default_config(self):
         c = nl._default_config
@@ -61,7 +56,6 @@ class TestConfigFunctions(unittest.TestCase):
         conf = nl.get_config()
         self.assertEqual(conf['usegit'], False)
         self.assertEqual(conf['usegit'], nl.use_git())
-
 
 # if __name__ == "__main__":
 #     unittest.main()

@@ -1,23 +1,11 @@
-
 import os
 import unittest
-# import pudb; pu.db
+#import pudb; pu.db
 
 import pynoteslib as nl
 #from pynoteslib import *
 
 unittest.TestLoader.sortTestMethodsUsing = None
-
-test_default_config_dict = {
-    "gpgkey": "",
-    "spelling": "none",
-    "default": "Notes",
-    "use": "Notes",
-    "home": "/home/ian",
-    "notesdir": "",
-    "configfile": "",
-    "usegit": False
-}
 
 
 class TestNotefileFunctions(unittest.TestCase):
@@ -39,7 +27,7 @@ class TestNotefileFunctions(unittest.TestCase):
         print(my.filename)
         my.save_ciphertext()
         self.assertTrue(os.path.exists(nl.get_note_fullpath(my.filename)))
-        nl.rename_note('before_rename_note.asc', 'after rename notemake tree')
+        nl.rename_note('before_rename_note.asc', 'after rename note')
         self.assertTrue(os.path.exists(nl.get_note_fullpath('after_rename_note.asc')))
 
 
@@ -63,7 +51,6 @@ class TestNotefileFunctions(unittest.TestCase):
     #     self.assertTrue(os.path.exists(nl.get_fullpath('testDeleteNB')))
     #     self.assertTrue(nl.delete_notebook('testDeleteNB'))
     #     self.assertFalse(os.path.exists(nl.get_fullpath('testDeleteNB')))
-
 
 
 # if __name__ == "__main__":
