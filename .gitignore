@@ -1,6 +1,12 @@
 # MY TESTING DIRECTORY
 __testing__/
 
+#coverage
+htmlcov/
+
+# pycharm
+.idea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
