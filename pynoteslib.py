@@ -220,13 +220,22 @@ def get_notebooks():
     conf = get_config()
     return next(os.walk(conf['notesdir']))[1]
 
+def get_notes(self, notebook=''):
+    """
+    get_notes()                 Returns a list of note in given notebook (or the USE'd notebook if none supplied)
+    :param self:
+    :param (optional) notebook: Specify notebook or default to the USE'd notebook
+    :return:
+    """
+    if notebook == '':
+        conf = get_config()
+        notebook = conf['use']
+
+    notebook = os.path.join(get_notesdir(), notebook)
+
+    return os.listdir(notebook)
 
 """
-
-def get_notes(self, notebook):
-    #Return a collection of all notes within a specified notebook
-    return os.listdir(notebook.fullpath)
-
 def new_key(self, key):
     #     Change GPG key for all notes.
 

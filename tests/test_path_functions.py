@@ -1,13 +1,13 @@
 import os
 import unittest
-# import pudb; pu.db
+#import pudb; pu.db
 
 import pynoteslib as nl
 #from pynoteslib import *
 
 unittest.TestLoader.sortTestMethodsUsing = None
 
-
+print(os.environ['NOTESDIR'] )
 class TestPathFunctions(unittest.TestCase):
 
     def test_get_fullpath(self):
