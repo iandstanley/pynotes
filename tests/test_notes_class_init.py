@@ -19,21 +19,21 @@ class TestNotesClassInitiators(unittest.TestCase):
     def test_init_with_title(self):
         my = Notes(title='this is my note title')
         self.assertEqual('this_is_my_note_title', my.title)
-        self.assertEqual(my.filename, '')
+        self.assertEqual(my.filename, 'this_is_my_note_title')
         self.assertEqual(my.plaintext, '')
         self.assertEqual(my.ciphertext, '')
 
     def test_init_with_pt(self):
         my = Notes(title='my title', plaintext='Not so secret')
         self.assertEqual(my.title, 'my_title')
-        self.assertEqual(my.filename, '')
+        self.assertEqual(my.filename, 'my_title')
         self.assertEqual(my.plaintext, 'Not so secret')
         self.assertEqual(my.ciphertext, '')
 
     def test_init_with_ct(self):
         my = Notes(title='my title', ciphertext='%% Very secret')
         self.assertEqual(my.title, 'my_title')
-        self.assertEqual(my.filename, '')
+        self.assertEqual(my.filename, 'my_title.asc')
         self.assertEqual(my.plaintext, '')
         self.assertEqual(my.ciphertext, '%% Very secret')
 
