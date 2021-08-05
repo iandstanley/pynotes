@@ -13,6 +13,7 @@ env:
 
 test: 	clean
         #clear
+	@gpg --import tests/testkey* tests/alttestkey* 2>/dev/null
 	@echo "NOTESDIR in makefile reads = $(NOTESDIR) "
 	mkdir -p $(NOTESDIR)
 	#python -m unittest -v tests/*.py
@@ -38,6 +39,15 @@ clean:
 	coverage erase
 	rm -rf htmlcov
 
+delete-gpg-testkeys:
+	gpg --batch --yes --delete-secret-keys 8A7E27118BE62DB9C94AFCD5B430CA1D89D91672
+	gpg --batch --yes --delete-keys 8A7E27118BE62DB9C94AFCD5B430CA1D89D91672
+	gpg --batch --yes --delete-secret-keys EBE9A06A2D15C4229F549D97A6D26EFA64C588D0
+	gpg --batch --yes --delete-keys EBE9A06A2D15C4229F549D97A6D26EFA64C588D0
+
+cleaner: clean delete-gpg-testkeys
+
+
 pip:
 	pip install python-gnupg
 	pip install pudb coverage
@@ -48,3 +58,4 @@ changelog:
 
 release_notes:
 	reno report 
+

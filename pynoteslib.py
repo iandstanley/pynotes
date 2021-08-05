@@ -14,7 +14,7 @@ import tarfile
 import gnupg  # see https://docs.red-dove.com/python-gnupg/
 
 _default_config = {
-    "gpgkey": "",
+    "gpgkey": "8A7E27118BE62DB9C94AFCD5B430CA1D89D91672",
     "spelling": "none",
     "default": "Notes",
     "use": "Notes",
@@ -147,7 +147,7 @@ def get_default_gpg_key():
     get_default_gpg_key()       finds the first private key in the users GPG keyring
     :return key:    returns the GPG key ID of the first private GPG key found in users keyring
     """
-    return "gpg_key_default"
+    return "8A7E27118BE62DB9C94AFCD5B430CA1D89D91672"
 
 
 def backup(conf):

@@ -10,7 +10,7 @@ import pynoteslib as nl
 unittest.TestLoader.sortTestMethodsUsing = None
 
 test_default_config_dict = {
-    "gpgkey": "",
+    "gpgkey": "8A7E27118BE62DB9C94AFCD5B430CA1D89D91672",
     "spelling": "none",
     "default": "Notes",
     "use": "Notes",
