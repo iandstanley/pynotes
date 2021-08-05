@@ -1,13 +1,14 @@
 #
 # pynotes - (Python implementation of Standard Unix Notes)
 #
-export NOTESDIR=/home/ian/pynotes/__testing__/notesdir
+# NOTESDIR now set in tests/.env for tests
+#export NOTESDIR=/home/ian/pynotes/__testing__/notesdir
 #export NOTESDIR=/home/ian/pynotes/__testing__/.notes
 
 default:	test
 
 env:
-	@echo  NOTESDIR is set to $(NOTESDIR)
+	@echo  NOTESDIR is set in the file tests/.env for testing
 	@cat $(NOTESDIR)/config
 
 test: 	clean
@@ -40,6 +41,7 @@ clean:
 pip:
 	pip install python-gnupg
 	pip install pudb coverage
+	pip install python-dotenv
 
 changelog:
 	git2cl > ChangeLog

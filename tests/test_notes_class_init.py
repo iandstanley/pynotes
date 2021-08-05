@@ -1,5 +1,8 @@
 import unittest
 import os
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
 from pynoteslib import *
 #import pynoteslib
 #import pudb; pu.db

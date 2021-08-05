@@ -1,5 +1,7 @@
 import os
 import unittest
+from dotenv import load_dotenv
+load_dotenv(override=True)
 # import pudb; pu.db
 
 import pynoteslib as nl
@@ -56,6 +58,3 @@ class TestConfigFunctions(unittest.TestCase):
         conf = nl.get_config()
         self.assertEqual(conf['usegit'], False)
         self.assertEqual(conf['usegit'], nl.use_git())
-
-# if __name__ == "__main__":
-#     unittest.main()
