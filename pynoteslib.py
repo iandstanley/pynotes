@@ -157,17 +157,18 @@ def backup(conf):
     """
     # TODO Fixup to work after refactoring
     t = datetime.datetime.now()
+    conf = get_config()
     backupfile = (
-        f"{notesdir}/../notes_backup_{t.strftime('%Y%b%d_%H%M')}.tar"
+        f"{conf['notesdir']}/../notes_backup_{t.strftime('%Y%b%d_%H%M')}.tar"
     )
 
     try:
         tar = tarfile.open(backupfile, "w")
-        tar.add(notesdir)
+        tar.add(conf['notesdir'])
         tar.close()
-        return True
+        return True, backupfile
 
-    except tar.TarError as err:
+    except tarfile.TarError as err:
         return err
 
 def get_default_notebook():

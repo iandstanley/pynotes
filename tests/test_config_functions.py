@@ -2,7 +2,7 @@ import os
 import unittest
 from dotenv import load_dotenv
 load_dotenv(override=True)
-# import pudb; pu.db
+#import pudb; pu.db
 
 import pynoteslib as nl
 #from pynoteslib import *
@@ -37,7 +37,7 @@ class TestConfigFunctions(unittest.TestCase):
         nl.create_config()
         self.assertTrue(os.path.exists(nl.get_config_file()))
 
-    def test__write_config(self):
+    def test_write_config(self):
         conf = nl._default_config
 
     def test_get_config(self):
