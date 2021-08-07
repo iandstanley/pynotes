@@ -38,7 +38,9 @@ class TestConfigFunctions(unittest.TestCase):
         self.assertTrue(os.path.exists(nl.get_config_file()))
 
     def test_write_config(self):
-        conf = nl._default_config
+        conf = nl.get_config()
+        nl.write_config(conf)
+        self.assertTrue(os.path.exists(conf['configfile']))
 
     def test_get_config(self):
         cf = nl.get_config()

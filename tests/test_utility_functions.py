@@ -32,9 +32,9 @@ class TestUtilityFunctions(unittest.TestCase):
         self.assertTrue(os.path.exists(nl.get_fullpath(cf['use'])))
         nl.create_notebook('testSetUseNB')
         self.assertTrue(os.path.exists(nl.get_fullpath('testSetUseNB')))
-        nl.use_notebook('testSetUseNB')
+        nl.use_notebook(notebook='testSetUseNB')
         self.assertEqual(nl.get_use_notebook(), 'testSetUseNB')
-        nl.use_notebook('Notes')
+        nl.use_notebook(notebook='Notes')
         self.assertEqual('Notes', nl.get_use_notebook())
 
     def test_default_notebook(self):

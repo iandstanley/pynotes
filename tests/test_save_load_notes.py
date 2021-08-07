@@ -15,6 +15,10 @@ class TestNoteSaveLoadNotes(unittest.TestCase):
         n.set_ciphertext("%% GI&THJhO&GyoIyuOBy")
         n.save_ciphertext()
         self.assertTrue(os.path.exists(os.path.exists(get_note_fullpath("testing_CT_save.asc"))))
+        noteslist = get_notes()
+        self.assertIn("testing_CT_save.asc", noteslist)
+        filepath = get_note_fullpath("testing_CT_save.asc")
+        self.assertEqual(filepath, get_notesdir()+"/Notes/testing_CT_save.asc")
 
     def test_save_plaintext(self):
         n = Notes(title="testing PT save")

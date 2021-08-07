@@ -13,6 +13,7 @@ class Test_notes_set_text(unittest.TestCase):
         my = Notes(title='this is my note title')
         self.assertEqual('this_is_my_note_title', my.title)
         self.assertEqual(my.filename, 'this_is_my_note_title')
+        self.assertEqual(my.get_filename(), 'this_is_my_note_title')
         self.assertEqual(my.plaintext, '')
         self.assertEqual(my.ciphertext, '')
         my.set_plaintext('Hello World')

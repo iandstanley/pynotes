@@ -9,7 +9,7 @@ default:	test
 
 env:
 	@echo  NOTESDIR is set in the file tests/.env for testing
-	@cat $(NOTESDIR)/config
+	@cat __testing__/notesdir/config
 
 test: 	clean
         #clear
@@ -26,6 +26,30 @@ test: 	clean
 debug:
 	python -m pudb tests/test_notes.py
 
+testoneattime:
+	python -m unittest tests/test_backup.py
+	read wait
+	python -m unittest tests/test_config_functions.py
+	read wait
+	python -m unittest tests/test_dotenv.py
+	read wait
+	python -m unittest tests/test_encrypt_and_decrypt.py
+	read wait
+	python -m unittest tests/test_notebook_functions.py
+	read wait
+	python -m unittest tests/test_note_file_functions.py
+	read wait
+	python -m unittest tests/test_notes_class_init.py
+	read wait
+	python -m unittest tests/test_notes_set_text.py
+	read wait
+	python -m unittest tests/test_path_functions.py
+	read wait
+	python -m unittest tests/test_save_load_notes.py
+	read wait
+	python -m unittest tests/test_utility_functions.py
+	read wait
+
 coverage:
 	coverage run -m unittest
 	coverage html
@@ -35,9 +59,9 @@ tree:
 	tree -a __testing__
 
 clean:
-	rm -rf __testing__/*
+	-@rm -rf __testing__/*  __testing__/.*
 	coverage erase
-	rm -rf htmlcov
+	-@rm -rf htmlcov
 
 delete-gpg-testkeys:
 	gpg --batch --yes --delete-secret-keys E4D4E23B3AC48FFA15C1949216427604C30E9831
@@ -50,7 +74,7 @@ cleaner: clean delete-gpg-testkeys
 
 pip:
 	pip install python-gnupg
-	pip install pudb coverage
+	pip install pudb coverage black pylint 
 	pip install python-dotenv
 
 changelog:

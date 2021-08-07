@@ -12,7 +12,6 @@ import sys
 import shutil
 import datetime
 import tarfile
-import gnupg
 import gnupg  # see https://docs.red-dove.com/python-gnupg/
 
 """
@@ -96,7 +95,6 @@ def write_config(conf):
                         (see_default_config as a sample structure)
     :return bool:       returns True on successful write of configfile
     """
-    # write config to config file
     # TODO write error handler for
     with open(get_config_file(), "w") as configf:
         toml.dump(conf, configf)
@@ -116,13 +114,15 @@ def get_notesdir():
     :param none:
     :return str:        returns the app's home folder (either $NOTESDIR or $HOME/.notes)
     """
+    if 'unittest' in sys.modules.keys():
+        return os.getcwd() + '/__testing__/notesdir'
+    else:   # pragma: no cover
+        if "NOTESDIR" in os.environ:
+            notesdir = os.environ["NOTESDIR"]
+        else:
+            notesdir = os.environ["HOME"] + "/.notes"
 
-    if "NOTESDIR" in os.environ:
-        notesdir = os.environ["NOTESDIR"]
-    else:
-        notesdir = os.environ["HOME"] + "/.notes"
-
-    return notesdir
+        return notesdir
 
 def config_file_exists():
     """
@@ -165,7 +165,7 @@ def get_default_gpg_key():
 
     if 'unittest' in sys.modules.keys():
         return _default_config['gpgkey']
-    else:
+    else:           # pragma: no cover
         gpg = gnupg.GPG(gnupghome='/home/ian/.gnupg')
         private_keys = gpg.list_keys(True)
         return private_keys[0]['keyid']
@@ -178,9 +178,7 @@ def backup(conf):
     # TODO Fixup to work after refactoring
     t = datetime.datetime.now()
     conf = get_config()
-    backupfile = (
-        f"{conf['notesdir']}/../notes_backup_{t.strftime('%Y%b%d_%H%M')}.tar"
-    )
+    backupfile = (f"{conf['notesdir']}/../notes_backup_{t.strftime('%Y%b%d_%H%M')}.tar")
 
     try:
         tar = tarfile.open(backupfile, "w")
@@ -188,7 +186,7 @@ def backup(conf):
         tar.close()
         return True, backupfile
 
-    except tarfile.TarError as err:
+    except tarfile.TarError as err:                # pragma: no cover
         return err
 
 def get_default_notebook():
@@ -209,7 +207,9 @@ def get_use_notebook():
 
 def default_notebook(nb):
     """
-    default_notebook()      Set the default notebook (which use_notebook defaults to if given '' instead of a notebook title)
+    default_notebook()      Set the default notebook (which use_notebook defaults to
+                            if given '' instead of a notebook title)
+
     :return bool:           returns bool re success.
     """
     conf = get_config()
@@ -220,16 +220,16 @@ def default_notebook(nb):
 
     return write_config(conf)
 
-def use_notebook(nb):
+def use_notebook(notebook='Notes'):
     """
     use_notebook()      Reads config file and returns what notebook is the default
     :return bool:       returns bool re success (of writing updated configfile).
     """
     conf = get_config()
-    nb_fullpath = get_fullpath(nb)
+    nb_fullpath = get_fullpath(notebook)
 
     if os.path.exists(nb_fullpath):
-        conf['use'] = nb
+        conf['use'] = notebook
 
     return write_config(conf)
 
@@ -241,12 +241,12 @@ def get_notebooks():
     conf = get_config()
     return next(os.walk(conf['notesdir']))[1]
 
-def get_notes(self, notebook=''):
+def get_notes(notebook=''):
     """
     get_notes()                 Returns a list of note in given notebook (or the USE'd notebook if none supplied)
     :param self:
     :param (optional) notebook: Specify notebook or default to the USE'd notebook
-    :return:
+    :return:                    list of notes in notebook; or empty list if invalid notebook
     """
     if notebook == '':
         conf = get_config()
@@ -254,26 +254,42 @@ def get_notes(self, notebook=''):
 
     notebook = os.path.join(get_notesdir(), notebook)
 
-    return os.listdir(notebook)
+    if os.path.exists(notebook):
+        return os.listdir(notebook)
+    else:
+        return []
 
-"""
-def new_key(self, key):
+
+def new_key(newkey):
+    """
+    new_key():          Change encryption key for all notes
+                        Traverses filesystem in NOTESDIR/[all notebooks]
+                        Decrypts and re-encrypts with specified newkey
+    :param  newkey:     New gpg keyid
+    :returns bool:      False = invalid private key
+    """
     #     Change GPG key for all notes.
-
-    if not self.validate_gpg_key(key):  # return False if not valid private key
+    if not validate_gpg_key(newkey):  # return False if not valid private key
         return False
 
-    # then process each file and decrypt/encrypt them
+    # newkey -> config [picked up later by Notes.encrypt()]
+    conf = get_config()
+    conf['gpgkey'] = newkey
+    write_config(conf)
 
-    # update config file with new GPG key
-
+    for nb in get_notebooks():
+        for note in get_notes(notebook = nb):
+            n = Notes(filename=note)
+            n.decrypt()
+            n.encrypt()
+            n.save_ciphertext()
     return True
-"""
+
 
 def validate_gpg_key(gpgkey):
     """
     validate_gpg_key():         Validates the specified gpgkey is a private key
-    :returns bool:
+    :returns bool:              True if gpgkey is a valid private key
     """
     conf = get_config()
     _gpghome = conf['home'] + '/.gnupg'
@@ -292,14 +308,18 @@ def get_fullpath(name):
     conf = get_config()
     return conf['notesdir'] + '/' + name
 
-def get_note_fullpath(note):
+def get_note_fullpath(note, notebook=''):
     """
     get_use_fullpath(note)      Returns the full pathname of a note within the currently USE'd Notebook
     :param note:                title (or filename) of a note
     :return str:                Returns full path to a no
     """
     conf = get_config()
-    return conf['notesdir'] + '/' + conf['use'] + '/' + change_spaces(note)
+    if notebook == '':
+        return conf['notesdir'] + '/' + conf['use'] + '/' + change_spaces(note)
+    else:
+        return conf['notesdir'] + '/' + notebook + '/' + change_spaces(note)
+
 
 def change_spaces(str):
     return str.replace(" ", "_")
@@ -307,7 +327,6 @@ def change_spaces(str):
 # ================ notebook functions ==================#
 
 def create_notebook(title):
-    #conf = get_config()
     notebookname = title.replace(" ", "_")
     notebookpath = get_fullpath(title)
 
@@ -364,8 +383,8 @@ def import_note(filename):
 
         if _ext == GPGEXT:
 
-            # load cyphertext
-            with open(mynote.filename, "r") as outp:
+            # load cyphertext  -real edge case (why would they import an encrypted note?)
+            with open(mynote.filename, "r") as outp:                       # pragma: no cover
                 mynote.ciphertext = outp.read()
                 mynote.plaintext = ''
 
@@ -430,9 +449,10 @@ def delete_note(filename):
     #        title = title.replace(" ","_")
     filename = get_note_fullpath(os.path.splitext(filename)[0] + GPGEXT)
 
-    os.remove(filename)
-
-    return os.path.exists(filename)
+    if os.path.exists(filename):
+        return os.remove(filename)
+    else:
+        return False
 
 def copy_to_notebook(filename, notebook):
     """
@@ -445,9 +465,6 @@ def copy_to_notebook(filename, notebook):
     notebook = os.path.join(get_notesdir(), os.path.splitext(notebook)[0])
 
     if not os.path.exists(note) or not os.path.exists(notebook):
-        return False
-
-    if not os.path.exists(os.path.splitext(notebook)[0]):
         return False
 
     shutil.copy2(note, notebook)
@@ -466,9 +483,6 @@ def move_to_notebook(filename, notebook):
     notebook = os.path.join(get_notesdir(), os.path.splitext(notebook)[0])
 
     if not os.path.exists(note) or not os.path.exists(notebook):
-        return False
-
-    if not os.path.exists(os.path.splitext(notebook)[0]):
         return False
 
     os.rename(note, os.path.join(notebook, filename))
@@ -563,7 +577,7 @@ class Notes:
     def add_extension(self):
         self.filename = os.path.splitext(self.filename)[0] + '.asc'
 
-    def remove_extension(self):
+    def remove_extension(self):         # pragma: no cover
         self.filename = os.path.splitext(self.filename)[0]
 
     def get_extension(self):
@@ -604,7 +618,7 @@ class Notes:
         """
 
         if self.filename == '':
-            self.set_filename(self.title + '.asc')
+            self.set_filename(self.title + '.asc')              # pragma: no cover
         else:
             self.set_filename(os.path.splitext(self.filename)[0] + '.asc')
 
@@ -620,7 +634,7 @@ class Notes:
         :return:
         """
         if self.filename == '':
-            self.set_filename(self.title)
+            self.set_filename(self.title)           # pragma: no cover
         else:
             self.set_filename(os.path.splitext(self.filename)[0])
 
@@ -688,7 +702,8 @@ class Notes:
         # dummy encryption
         self.ciphertext = str(self.gpghandle.encrypt(self.plaintext, self.gpgkey))
         self.plaintext = ""
-        self.filename = self.filename + '.asc'
+        if self.get_extension() != GPGEXT:
+            self.filename = self.filename + '.asc'
         return self.ciphertext
 
     def decrypt(self):

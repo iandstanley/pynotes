@@ -18,13 +18,15 @@ class TestNotefileFunctions(unittest.TestCase):
         cf = nl.get_config()
         cf['gpgkey'] = TESTKEY
         nl.write_config(cf)
+        nl.use_notebook()
         my = nl.Notes(title='before dup note', plaintext='Hello World')
         my.encrypt()
         my.save_ciphertext()
         self.assertTrue(os.path.exists(nl.get_note_fullpath(my.filename)))
         nl.duplicate_note('before dup note', 'after dup note')
         self.assertTrue(os.path.exists(nl.get_note_fullpath(my.filename)))
-        self.assertTrue(os.path.exists(nl.get_note_fullpath('after_dup_note.asc')))
+        self.assertTrue(os.path.exists(nl.get_note_fullpath('after_dup_note.asc', notebook='Notes')))
+        self.assertFalse(nl.duplicate_note('DOESNT_EXIST', 'DOES_EXIST'))
 
 
     def test_rename_notefile(self):
@@ -37,6 +39,7 @@ class TestNotefileFunctions(unittest.TestCase):
         self.assertTrue(os.path.exists(nl.get_note_fullpath(my.filename)))
         nl.rename_note('before_rename_note.asc', 'after rename note')
         self.assertTrue(os.path.exists(nl.get_note_fullpath('after_rename_note.asc')))
+        self.assertFalse(nl.rename_note('DOESNT_EXIST', 'DOES_EXIST'))
 
 
     def test_delete_notefile(self):
@@ -49,6 +52,8 @@ class TestNotefileFunctions(unittest.TestCase):
         self.assertTrue(os.path.exists(nl.get_note_fullpath('delete_note.asc')))
         nl.delete_note('delete_note.asc')
         self.assertFalse(os.path.exists(nl.get_note_fullpath('delete_note.asc')))
+        self.assertFalse(nl.delete_note('DOESNT_EXIST'))
+
 
     def test_copy_to_notebookfile(self):
         cf = nl.get_config()
@@ -62,6 +67,17 @@ class TestNotefileFunctions(unittest.TestCase):
         nl.copy_to_notebook(my.filename, 'copy2notebook')
         self.assertTrue(os.path.exists(nl.get_note_fullpath('copyto_note.asc')))
         self.assertTrue(os.path.exists(os.path.join(nl.get_notesdir(), 'copy2notebook' , 'copyto_note.asc')))
+        self.assertFalse(nl.copy_to_notebook('DOESNT_EXIST', 'copy2notebook'))
+
+    def test_copy_to_notebookfile_invalid_notebook(self):
+        cf = nl.get_config()
+        cf['gpgkey'] = TESTKEY
+        nl.write_config(cf)
+        my = nl.Notes(title='copyto note fake notebook', plaintext='Hello World')
+        my.encrypt()
+        my.save_ciphertext()
+        self.assertFalse(nl.copy_to_notebook(my.filename, 'NOTEBOOK_DOESNT_EXIST'))
+
 
     def test_move_to_notebook(self):
         cf = nl.get_config()
@@ -75,3 +91,5 @@ class TestNotefileFunctions(unittest.TestCase):
         nl.move_to_notebook(my.filename, 'move2notebook')
         self.assertFalse(os.path.exists(nl.get_note_fullpath('moveto_note.asc')))
         self.assertTrue(os.path.exists(os.path.join(nl.get_notesdir(), 'move2notebook' , 'moveto_note.asc')))
+        self.assertFalse(nl.move_to_notebook('DOESNT_EXIST', 'move2notebook'))
+        self.assertFalse(nl.move_to_notebook(my.filename, 'NOTEBOOK_DOESNT_EXIST'))
