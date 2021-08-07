@@ -10,8 +10,8 @@ All rights reserved.
 This is a demo message
 """
 
-recipients = 'test@noteslib'
-#recipients = 'E4D4E23B3AC48FFA15C1949216427604C30E9831'
+#recipients = 'test@noteslib'
+##recipients = 'E4D4E23B3AC48FFA15C1949216427604C30E9831'
 
 data = gpg.encrypt(message, recipients)
 
