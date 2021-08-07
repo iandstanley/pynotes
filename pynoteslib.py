@@ -11,10 +11,11 @@ import os
 import shutil
 import datetime
 import tarfile
+import gnupg
 import gnupg  # see https://docs.red-dove.com/python-gnupg/
 
 _default_config = {
-    "gpgkey": "8A7E27118BE62DB9C94AFCD5B430CA1D89D91672",
+    "gpgkey": "E4D4E23B3AC48FFA15C1949216427604C30E9831",
     "spelling": "none",
     "default": "Notes",
     "use": "Notes",
@@ -147,7 +148,7 @@ def get_default_gpg_key():
     get_default_gpg_key()       finds the first private key in the users GPG keyring
     :return key:    returns the GPG key ID of the first private GPG key found in users keyring
     """
-    return "8A7E27118BE62DB9C94AFCD5B430CA1D89D91672"
+    return "E4D4E23B3AC48FFA15C1949216427604C30E9831"
 
 
 def backup(conf):
@@ -520,6 +521,11 @@ class Notes:
         self.ciphertext = ciphertext
         self.filename = change_spaces(filename)
 
+        cf = get_config()
+        _gpghome = cf['home'] + '/.gnupg'
+        self.gpghandle = gnupg.GPG(gnupghome=_gpghome)
+        self.gpgkey = cf['gpgkey']
+
         if self.filename == '' and not self.title == '':
             self.set_filename(self.title)
 
@@ -648,19 +654,31 @@ class Notes:
 
         return True
 
-    # TODO rewrite using GPG encryption
-
     def encrypt(self):
-        """encrypt Plaintext to Ciphertext"""
+        """
+        Notes.encrypt()     Encrypts self.plaintext
+
+        Encrypts the plaintext, saves that in ciphertext; sets plaintext to ''
+        and also returns the ciphertext to the caller
+        :returns self.ciphertext:
+        """
         # dummy encryption
-        self.ciphertext = "%% " + self.plaintext
+        self.ciphertext = str(self.gpghandle.encrypt(self.plaintext, self.gpgkey))
         self.plaintext = ""
         self.filename = self.filename + '.asc'
+        return self.ciphertext
 
     def decrypt(self):
-        """encrypt Plaintext to Ciphertext"""
-        self.plaintext = self.ciphertext[3:]
+        """
+        Notes.decrypt()     Encrypts self.plaintext
+
+        Decrypts the ciphertext, saves that in plaintext; sets ciphertext to ''
+        and also returns the plaintext to the caller
+        :returns self.ciphertext:
+        """
+        self.plaintext = str(self.gpghandle.decrypt(self.ciphertext))
         self.ciphertext = ""
+        return self.plaintext
 
 
 if __name__ == "__main__":

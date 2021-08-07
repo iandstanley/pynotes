@@ -8,16 +8,12 @@ from pynoteslib import *
 
 
 class TestNoteEncryptAndDecrypt(unittest.TestCase):
-    def test_encrypt(self):
+    def test_encrypt_and_decrypt(self):
+        message = "This is some text"
         n = Notes(title='testing encrypt')
-        n.set_plaintext("This is some text")
-        n.encrypt()
+        n.set_plaintext(message)
+        ct = n.encrypt()
         n.save_ciphertext()
         self.assertTrue( os.path.exists(get_note_fullpath(n.filename)))
-
-    def test_decrypt(self):
-        n = Notes(title="testing decrypt")
-        n.set_ciphertext("%% This is some text")
-        n.decrypt()
-        n.save_plaintext()
-        self.assertTrue(os.path.exists(get_note_fullpath("testing_decrypt")))
+        pt = n.decrypt()
+        self.assertEqual(message, pt)

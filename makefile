@@ -13,7 +13,7 @@ env:
 
 test: 	clean
         #clear
-	@gpg --import tests/testkey* tests/alttestkey* 2>/dev/null
+	@gpg --import tests/test.key tests/test.pub tests/alttest.key tests/alttest.pub
 	@echo "NOTESDIR in makefile reads = $(NOTESDIR) "
 	mkdir -p $(NOTESDIR)
 	#python -m unittest -v tests/*.py
@@ -40,10 +40,10 @@ clean:
 	rm -rf htmlcov
 
 delete-gpg-testkeys:
-	gpg --batch --yes --delete-secret-keys 8A7E27118BE62DB9C94AFCD5B430CA1D89D91672
-	gpg --batch --yes --delete-keys 8A7E27118BE62DB9C94AFCD5B430CA1D89D91672
-	gpg --batch --yes --delete-secret-keys EBE9A06A2D15C4229F549D97A6D26EFA64C588D0
-	gpg --batch --yes --delete-keys EBE9A06A2D15C4229F549D97A6D26EFA64C588D0
+	gpg --batch --yes --delete-secret-keys E4D4E23B3AC48FFA15C1949216427604C30E9831
+	gpg --batch --yes --delete-keys E4D4E23B3AC48FFA15C1949216427604C30E9831
+	gpg --batch --yes --delete-secret-keys 42456745CCBF000CA591E73CDBCC0C3D5CB54E7B
+	gpg --batch --yes --delete-keys 42456745CCBF000CA591E73CDBCC0C3D5CB54E7B
 
 cleaner: clean delete-gpg-testkeys
 
