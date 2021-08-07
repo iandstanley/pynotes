@@ -8,12 +8,20 @@ PYNOTESLIB  implements the notes() class and a number of functions to manipulate
 from configparser import ConfigParser
 import toml
 import os
+import sys
 import shutil
 import datetime
 import tarfile
 import gnupg
 import gnupg  # see https://docs.red-dove.com/python-gnupg/
 
+"""
+Note the hardcoded 'gpgkey' included in _default_config
+- Under unittest conditions this will be returned 
+  by get_default_gpg_key()
+- Under normal operating conditions get_default_gpg_key will 
+  return the first private key it finds
+"""
 _default_config = {
     "gpgkey": "E4D4E23B3AC48FFA15C1949216427604C30E9831",
     "spelling": "none",
@@ -146,15 +154,26 @@ def set_git(gitstatus):
 def get_default_gpg_key():
     """
     get_default_gpg_key()       finds the first private key in the users GPG keyring
-    :return key:    returns the GPG key ID of the first private GPG key found in users keyring
-    """
-    return "E4D4E23B3AC48FFA15C1949216427604C30E9831"
 
+    Under 'unittest' conditions it returns the test@noteslib GPG key shown
+    in _default_config['gpgkey'] to use in testing
+    In normal conditions it returns the first private gpgkey found in the
+    user's keyring
+
+    :return key:    returns the GPG key ID to be used
+    """
+
+    if 'unittest' in sys.modules.keys():
+        return _default_config['gpgkey']
+    else:
+        gpg = gnupg.GPG(gnupghome='/home/ian/.gnupg')
+        private_keys = gpg.list_keys(True)
+        return private_keys[0]['keyid']
 
 def backup(conf):
     """
     backup()                Backup configuration, notes and notebook to tar file
-    :return:
+    :return bool:   Depending on return code of tarfile creation/write
     """
     # TODO Fixup to work after refactoring
     t = datetime.datetime.now()
@@ -175,7 +194,7 @@ def backup(conf):
 def get_default_notebook():
     """
     get_default_notebook()          Reads config file and returns what notebook is the default
-    :return:
+    :return str:                    Returns the name of the default notebook
     """
     conf = get_config()
     return conf['default']
@@ -203,8 +222,8 @@ def default_notebook(nb):
 
 def use_notebook(nb):
     """
-    use_notebook()  Reads config file and returns what notebook is the default
-    :return bool:           returns bool re success.
+    use_notebook()      Reads config file and returns what notebook is the default
+    :return bool:       returns bool re success (of writing updated configfile).
     """
     conf = get_config()
     nb_fullpath = get_fullpath(nb)
@@ -249,16 +268,20 @@ def new_key(self, key):
     # update config file with new GPG key
 
     return True
-
-def validate_gpg_key(self, key):
-    #Validates that the supplied key is a PRIVATE key
-    gpg = gnupg.GPG(gnupghome=self.gnupghome)
-    if gpg.list_keys(True, keys=key):
-        return True
-    else:
-        return False
-
 """
+
+def validate_gpg_key(gpgkey):
+    """
+    validate_gpg_key():         Validates the specified gpgkey is a private key
+    :returns bool:
+    """
+    conf = get_config()
+    _gpghome = conf['home'] + '/.gnupg'
+    gpg = gnupg.GPG(gnupghome=_gpghome)
+    private_keys = gpg.list_keys(True, keys=gpgkey)
+
+    return private_keys
+
 
 def get_fullpath(name):
     """

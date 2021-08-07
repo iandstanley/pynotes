@@ -3,6 +3,7 @@ import unittest
 from dotenv import load_dotenv
 load_dotenv(override=True)
 
+TESTKEY = 'E4D4E23B3AC48FFA15C1949216427604C30E9831'
 #import pudb; pu.db
 
 import pynoteslib as nl
@@ -15,6 +16,8 @@ class TestNotefileFunctions(unittest.TestCase):
 
     def test_duplicate_notefile(self):
         cf = nl.get_config()
+        cf['gpgkey'] = TESTKEY
+        nl.write_config(cf)
         my = nl.Notes(title='before dup note', plaintext='Hello World')
         my.encrypt()
         my.save_ciphertext()
@@ -26,6 +29,8 @@ class TestNotefileFunctions(unittest.TestCase):
 
     def test_rename_notefile(self):
         cf = nl.get_config()
+        cf['gpgkey'] = TESTKEY
+        nl.write_config(cf)
         my = nl.Notes(title='before rename note', plaintext='Hello World')
         my.encrypt()
         my.save_ciphertext()
@@ -36,6 +41,8 @@ class TestNotefileFunctions(unittest.TestCase):
 
     def test_delete_notefile(self):
         cf = nl.get_config()
+        cf['gpgkey'] = TESTKEY
+        nl.write_config(cf)
         my = nl.Notes(title='delete note', plaintext='Hello World')
         my.encrypt()
         my.save_ciphertext()
@@ -45,6 +52,8 @@ class TestNotefileFunctions(unittest.TestCase):
 
     def test_copy_to_notebookfile(self):
         cf = nl.get_config()
+        cf['gpgkey'] = TESTKEY
+        nl.write_config(cf)
         my = nl.Notes(title='copyto note', plaintext='Hello World')
         my.encrypt()
         my.save_ciphertext()
@@ -56,6 +65,8 @@ class TestNotefileFunctions(unittest.TestCase):
 
     def test_move_to_notebook(self):
         cf = nl.get_config()
+        cf['gpgkey'] = TESTKEY
+        nl.write_config(cf)
         my = nl.Notes(title='moveto note', plaintext='Hello World')
         my.encrypt()
         my.save_ciphertext()

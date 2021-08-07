@@ -58,3 +58,7 @@ class TestConfigFunctions(unittest.TestCase):
         conf = nl.get_config()
         self.assertEqual(conf['usegit'], False)
         self.assertEqual(conf['usegit'], nl.use_git())
+
+    def test_gpgkey_from_get_default_gpg_key(self):
+        conf = nl.get_config()
+        self.assertEqual(conf['gpgkey'], test_default_config_dict['gpgkey'])
